@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Maskable ikona — plné pozadie bez zaoblenia (systém aplikuje masku sám) -->
+  <rect width="512" height="512" fill="#080808"/>
+
+  <defs>
+    <linearGradient id="fg2" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="55%" stop-color="#FF5500"/>
+      <stop offset="100%" stop-color="#CC2200"/>
+    </linearGradient>
+    <linearGradient id="cg2" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Plameň (trochu menší aby bol v safe zone maskable ikony) -->
+  <path
+    d="M256 110
+       C 256 110, 294 172, 312 218
+       C 334 274, 320 324, 299 354
+       C 328 314, 336 264, 316 220
+       C 340 262, 353 316, 332 363
+       C 317 399, 287 421, 256 430
+       C 225 421, 195 399, 180 363
+       C 159 316, 172 262, 196 220
+       C 176 264, 184 314, 213 354
+       C 192 324, 178 274, 200 218
+       C 218 172, 256 110, 256 110 Z"
+    fill="url(#fg2)"/>
+
+  <path
+    d="M256 225
+       C 256 225, 280 260, 286 293
+       C 292 328, 277 356, 256 367
+       C 235 356, 220 328, 226 293
+       C 232 260, 256 225, 256 225 Z"
+    fill="url(#cg2)" opacity="0.8"/>
+</svg>

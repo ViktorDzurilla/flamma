@@ -1,0 +1,44 @@
+{
+  "name": "FLAMMA — Návykový tracker",
+  "short_name": "FLAMMA",
+  "description": "Buduj návyky podložené vedou. Každý deň malé kroky — za rok nový ty.",
+  "start_url": "./FLAMMA_prototype.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#080808",
+  "theme_color": "#FF5500",
+  "lang": "sk",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Zapáliť",
+      "short_name": "Zapáliť",
+      "description": "Označ dnešné návyky",
+      "url": "./FLAMMA_prototype.html#kindle",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Analytika",
+      "short_name": "Analytika",
+      "description": "Pozri si svoj pokrok",
+      "url": "./FLAMMA_prototype.html#historia",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    }
+  ],
+  "screenshots": []
+}
