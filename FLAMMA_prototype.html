@@ -869,16 +869,6 @@
     .sec-done-title { font-size: 14px; font-weight: 700; color: var(--go); }
     .sec-done-sub   { font-size: 11px; color: var(--tx2); margin-top: 2px; }
 
-    /* ── DAILY PLAN ── */
-    .daily-plan { margin: 10px 20px 0; }
-    .daily-plan-lbl { font-size: 9px; font-weight: 800; letter-spacing: 2px; color: var(--tx2); text-transform: uppercase; margin-bottom: 8px; }
-    .daily-plan-row { display:flex; align-items:center; gap:10px; background:var(--bg2); border-radius:14px; padding:10px 12px; margin-bottom:5px; border:1px solid rgba(255,255,255,.04); cursor:pointer; transition:all .18s; }
-    .daily-plan-row:active { transform:scale(.97); }
-    .daily-plan-row.done { opacity:.45; pointer-events:none; }
-    .daily-plan-ic { font-size:20px; flex-shrink:0; }
-    .daily-plan-nm { font-size:12px; font-weight:700; flex:1; }
-    .daily-plan-btn { font-size:9px; font-weight:800; color:var(--or); padding:5px 10px; background:rgba(255,85,0,.1); border-radius:8px; white-space:nowrap; flex-shrink:0; }
-    .daily-plan-row.done .daily-plan-btn { color:var(--tx2); background:var(--bg3); }
 
     /* ── SPARKLINE ── */
     .sparkline-card { margin:10px 20px 0; background:var(--bg2); border-radius:16px; padding:12px 16px; border:1px solid rgba(255,255,255,.04); }
@@ -1413,14 +1403,6 @@
       box-shadow: 0 3px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.04);
     }
 
-    /* ══════════════════════════════
-       DAILY PLAN IMPROVED
-    ══════════════════════════════ */
-    .daily-plan-row {
-      box-shadow: 0 2px 8px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.04);
-      transition: all .2s cubic-bezier(.4,0,.2,1);
-    }
-    .daily-plan-row:active { transform: scale(.97); }
 
     /* ══════════════════════════════
        SCREEN TRANSITION
@@ -1795,11 +1777,6 @@
       </div>
     </div>
 
-    <!-- Daily plan -->
-    <div class="daily-plan" id="daily-plan">
-      <div class="daily-plan-lbl">⚡ Čo urobiť teraz</div>
-      <div id="daily-plan-rows"></div>
-    </div>
 
     <!-- Coach button -->
     <div class="coach-open-btn" onclick="openCoach()" style="margin:0 20px 14px">
@@ -4048,50 +4025,8 @@ function renderLeaderboard() {
   });
 }
 
-/* ─────────────────────────────
-   DAILY PLAN
-───────────────────────────── */
-function renderDailyPlan() {
-  const wrap = document.getElementById('daily-plan-rows');
-  const plan = document.getElementById('daily-plan');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-
-  const hr   = new Date().getHours();
-  const gIdx = hr < 12 ? 0 : hr < 18 ? 1 : 2;
-
-  // Zbierame len nesplnené aktívne návyky od aktuálnej časovej skupiny
-  const candidates = [];
-  for (let g = gIdx; g < GROUPS.length && candidates.length < 3; g++) {
-    GROUPS[g].ids.forEach(id => {
-      const hh = habitById(id);
-      if (candidates.length < 3 && hh && hh.active !== false && !hh.done)
-        candidates.push(id);
-    });
-  }
-
-  if (candidates.length === 0) {
-    wrap.innerHTML = `<div style="text-align:center;padding:10px 0;font-size:12px;color:var(--go);font-weight:700">🔥 Skvelá práca! Všetko na dnešok splnené.</div>`;
-    return;
-  }
-
-  candidates.forEach(id => {
-    const hab = habitById(id);
-    if (!hab) return;
-    const row = document.createElement('div');
-    row.className = 'daily-plan-row';
-    row.id = `dp-row-${id}`;
-    row.innerHTML = `
-      <div class="daily-plan-ic">${hab.icon}</div>
-      <div class="daily-plan-nm">${hab.name}</div>
-      <div class="daily-plan-btn" id="dp-btn-${id}">Splniť</div>`;
-    row.onclick = () => {
-      toggleHabit(id);
-      renderDailyPlan(); // prekreslí zoznam
-    };
-    wrap.appendChild(row);
-  });
-}
+/* renderDailyPlan — removed */
+function renderDailyPlan() {}
 
 /* ─────────────────────────────
    SPARKLINE
