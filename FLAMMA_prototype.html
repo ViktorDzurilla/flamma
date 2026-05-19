@@ -106,13 +106,21 @@
     html.is-mobile .statusbar    { display: none !important; }
     html.is-mobile .screen {
       top: env(safe-area-inset-top, 0px) !important;
-      /* Siaha až pod bnav — žiadna compositing hranica */
       bottom: 0 !important;
-      padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+      padding-bottom: 0 !important;
+      overscroll-behavior-y: none !important;
+    }
+    /* iOS ignoruje padding-bottom na overflow:auto — používame ::after */
+    html.is-mobile .screen::after {
+      content: '';
+      display: block;
+      height: calc(88px + env(safe-area-inset-bottom, 0px));
+      flex-shrink: 0;
     }
     html.is-mobile .bnav {
       height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
       padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+      background: var(--bg) !important;
     }
 
     /* Status bar */
@@ -136,7 +144,7 @@
     /* ── BOTTOM NAV ── */
     .bnav {
       position: absolute; bottom:0; left:0; right:0; height:88px;
-      background: #060606;
+      background: var(--bg);
       display: flex; justify-content: space-around; align-items: flex-start;
       padding-top: 8px; overflow: hidden;
     }
