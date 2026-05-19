@@ -531,19 +531,6 @@
     }
     .past-banner.show { display: flex; }
 
-    /* Reminder banner */
-    .reminder-banner {
-      margin: 4px 20px 0;
-      display: none; align-items: center; justify-content: space-between; gap: 12px;
-      background: linear-gradient(135deg, rgba(255,85,0,.12), rgba(255,140,0,.06));
-      border: 1.5px solid rgba(255,140,0,.25);
-      border-radius: 14px; padding: 11px 14px;
-      cursor: pointer;
-    }
-    .reminder-banner.show { display: flex; }
-    .reminder-title { font-size: 12px; font-weight: 700; color: var(--am); }
-    .reminder-sub   { font-size: 10px; color: var(--tx2); margin-top: 1px; }
-    .reminder-btn   { font-size: 12px; font-weight: 700; color: var(--or); white-space: nowrap; flex-shrink: 0; }
 
     /* Habit done bounce */
     @keyframes habitBounce {
@@ -1727,14 +1714,6 @@
     <!-- Past day banner -->
     <div class="past-banner" id="past-banner">📅 Pozeráš si minulosť — zmeny nie sú možné</div>
 
-    <!-- Reminder banner -->
-    <div class="reminder-banner" id="reminder-banner" onclick="navTo('kindle')">
-      <div>
-        <div class="reminder-title" id="reminder-title"></div>
-        <div class="reminder-sub" id="reminder-sub"></div>
-      </div>
-      <div class="reminder-btn">Zapáliť →</div>
-    </div>
 
     <!-- Date nav -->
     <div class="date-nav">
@@ -3955,31 +3934,8 @@ function dismissStreakModal() {
   document.getElementById('streak-modal').classList.remove('show');
 }
 
-/* ─────────────────────────────
-   REMINDER
-───────────────────────────── */
-function updateReminder() {
-  const banner = document.getElementById('reminder-banner');
-  if (!banner) return;
-  if (currentDayOffset !== 0) { banner.classList.remove('show'); return; }
-
-  const h = new Date().getHours();
-  const timeGroup = h < 12 ? 0 : h < 18 ? 1 : 2;
-
-  let found = null;
-  for (let i = 0; i <= timeGroup; i++) {
-    const g = GROUPS[i];
-    const done = g.ids.filter(id => { const hh = habitById(id); return hh && hh.done; }).length;
-    if (done < g.ids.length) { found = { g, remaining: g.ids.length - done }; break; }
-  }
-
-  if (!found) { banner.classList.remove('show'); return; }
-  document.getElementById('reminder-title').textContent =
-    `${found.g.icon} ${found.g.name} — ${found.remaining} nesplnených`;
-  document.getElementById('reminder-sub').textContent =
-    'Ešte môžeš dokončiť tieto aktivity';
-  banner.classList.add('show');
-}
+/* updateReminder — removed (reminder banner removed) */
+function updateReminder() {}
 
 /* ─────────────────────────────
    CONFETTI
