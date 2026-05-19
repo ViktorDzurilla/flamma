@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- Detekcia mobilu — pridá triedu is-mobile PRED renderovaním, žiadne blikanie -->
+  <script>
+    (function(){
+      var ua = navigator.userAgent || '';
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+      var isStandalone = window.navigator.standalone === true
+                      || window.matchMedia('(display-mode: standalone)').matches;
+      if (isMobile || isStandalone) {
+        document.documentElement.classList.add('is-mobile');
+      }
+    })();
+  </script>
   <title>FLAMMA</title>
 
   <!-- ═══ PWA META TAGY ═══ -->
@@ -72,36 +84,33 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* ── SKUTOČNÝ MOBIL — žiadny rámček, skutočná celá obrazovka ── */
-    @media (pointer: coarse) and (max-device-width: 768px) {
-      html { height: 100%; }
-      body {
-        display: block !important;
-        background: var(--bg) !important;
-        margin: 0 !important; padding: 0 !important;
-        width: 100% !important; height: 100% !important;
-        overflow: hidden !important;
-      }
-      .phone {
-        width: 100vw !important;
-        height: 100dvh !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        outline: none !important;
-        position: fixed !important;
-        inset: 0 !important;
-      }
-      .phone::before { display: none !important; }
-      .statusbar { display: none !important; }
-      .screen {
-        top: env(safe-area-inset-top, 0px) !important;
-        bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
-      }
-      .bnav {
-        height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
-        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-      }
+    /* ── MOBIL: trieda pridaná cez JS ── */
+    html.is-mobile body {
+      display: block !important;
+      background: var(--bg) !important;
+      margin: 0 !important; padding: 0 !important;
+      width: 100% !important; height: 100% !important;
+      overflow: hidden !important;
+    }
+    html.is-mobile .phone {
+      width: 100vw !important;
+      height: 100dvh !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+      outline: none !important;
+      position: fixed !important;
+      inset: 0 !important;
+    }
+    html.is-mobile .phone::before { display: none !important; }
+    html.is-mobile .statusbar    { display: none !important; }
+    html.is-mobile .screen {
+      top: env(safe-area-inset-top, 0px) !important;
+      bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+    html.is-mobile .bnav {
+      height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+      padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     }
 
     /* Status bar */
