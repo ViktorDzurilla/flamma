@@ -72,6 +72,38 @@
       pointer-events: none; z-index: 0;
     }
 
+    /* ── SKUTOČNÝ MOBIL — žiadny rámček, skutočná celá obrazovka ── */
+    @media (pointer: coarse) and (max-device-width: 768px) {
+      html { height: 100%; }
+      body {
+        display: block !important;
+        background: var(--bg) !important;
+        margin: 0 !important; padding: 0 !important;
+        width: 100% !important; height: 100% !important;
+        overflow: hidden !important;
+      }
+      .phone {
+        width: 100vw !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        outline: none !important;
+        position: fixed !important;
+        inset: 0 !important;
+      }
+      .phone::before { display: none !important; }
+      .statusbar { display: none !important; }
+      .screen {
+        top: env(safe-area-inset-top, 0px) !important;
+        bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      .bnav {
+        height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+      }
+    }
+
     /* Status bar */
     .statusbar {
       height: 44px; padding: 14px 30px 0;
@@ -1657,43 +1689,6 @@
       font-size: 16px; color: #555; cursor: pointer; padding: 4px;
     }
 
-    /* Na skutočnom mobilnom zariadení — plná obrazovka bez rámčeka */
-    @media (max-width: 430px) {
-      html, body {
-        background: #080808 !important;
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: block !important;
-        overflow: hidden !important;
-      }
-      .phone {
-        width: 100vw !important;
-        height: 100dvh !important;
-        min-height: 100dvh !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        outline: none !important;
-        position: fixed !important;
-        top: 0 !important; left: 0 !important;
-      }
-      /* Skry falošný status bar — na telefóne je reálny */
-      .statusbar { display: none !important; }
-
-      /* Obsah siaha od vrchu (pod notch) po navbar */
-      .screen {
-        top: env(safe-area-inset-top, 0px) !important;
-        bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
-      }
-
-      /* Navbar — pridaj priestor pre home indicator */
-      .bnav {
-        height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
-        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-      }
-    }
 
   </style>
 </head>
