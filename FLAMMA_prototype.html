@@ -106,7 +106,9 @@
     html.is-mobile .statusbar    { display: none !important; }
     html.is-mobile .screen {
       top: env(safe-area-inset-top, 0px) !important;
-      bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+      /* Siaha až pod bnav — žiadna compositing hranica */
+      bottom: 0 !important;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
     }
     html.is-mobile .bnav {
       height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
