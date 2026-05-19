@@ -1751,15 +1751,6 @@
     </div>
 
 
-    <!-- Coach button -->
-    <div class="coach-open-btn" onclick="openCoach()" style="margin:0 20px 14px">
-      <div class="coach-open-ic">🤖</div>
-      <div style="flex:1">
-        <div class="coach-open-lbl">Denný koučing</div>
-        <div class="coach-open-sub" id="coach-open-sub">Dnešná reflexívna otázka</div>
-      </div>
-      <div class="coach-streak-badge" id="coach-streak-badge"></div>
-    </div>
 
     <!-- Stats strip -->
     <div class="stat-strip">
@@ -3367,6 +3358,21 @@ function renderSections() {
       btn.onclick = () => goToSection(gi + 1);
       panel.appendChild(btn);
     } else {
+      // Denný koučing — posledný prvok večernej sekcie
+      const coachBtn = document.createElement('div');
+      coachBtn.className = 'coach-open-btn';
+      coachBtn.style.margin = '8px 0 4px';
+      coachBtn.onclick = openCoach;
+      coachBtn.innerHTML = `
+        <div class="coach-open-ic">🤖</div>
+        <div style="flex:1">
+          <div class="coach-open-lbl">Denný koučing</div>
+          <div class="coach-open-sub" id="coach-open-sub">Dnešná reflexívna otázka</div>
+        </div>
+        <div class="coach-streak-badge" id="coach-streak-badge"></div>
+      `;
+      panel.appendChild(coachBtn);
+
       const doneCard = document.createElement('div');
       doneCard.className = 'sec-done-card';
       doneCard.innerHTML = `
