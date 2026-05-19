@@ -1657,13 +1657,27 @@
       font-size: 16px; color: #555; cursor: pointer; padding: 4px;
     }
 
-    /* Na skutočnom mobilnom zariadení skry rámeček telefónu */
+    /* Na skutočnom mobilnom zariadení — plná obrazovka bez rámčeka */
     @media (max-width: 430px) {
-      body { background: #080808; align-items: flex-start; }
+      html, body {
+        background: #080808 !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        overflow: hidden !important;
+      }
       .phone {
-        width: 100vw; height: 100dvh;
-        border-radius: 0;
-        box-shadow: none;
+        width: 100vw !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        outline: none !important;
+        position: fixed !important;
+        top: 0 !important; left: 0 !important;
       }
     }
 
@@ -1795,16 +1809,16 @@
     <!-- Stats strip -->
     <div class="stat-strip">
       <div class="sc">
-        <div class="sc-val">14</div>
+        <div class="sc-val" id="home-streak">0</div>
         <div class="sc-lbl">🔥 Streak</div>
       </div>
       <div class="sc">
-        <div class="sc-val" id="home-pts">847</div>
+        <div class="sc-val" id="home-pts">0</div>
         <div class="sc-lbl">✦ Body</div>
       </div>
       <div class="sc">
-        <div class="sc-val">Plameň</div>
-        <div class="sc-lbl">⚡ Úroveň 12</div>
+        <div class="sc-val" id="home-lvl">Iskra</div>
+        <div class="sc-lbl" id="home-lvl-lbl">⚡ Úroveň 1</div>
       </div>
     </div>
 
@@ -1820,33 +1834,6 @@
       <svg class="sparkline-svg" id="sparkline-svg" viewBox="0 0 300 50" preserveAspectRatio="none"></svg>
     </div>
 
-    <!-- Time-of-day summary -->
-    <div class="tod-row">
-      <div class="tod-card" onclick="navTo('kindle')">
-        <div class="tod-header">
-          <span class="tod-icon">🌅</span>
-          <span class="tod-name" style="color:var(--morning)">Ráno</span>
-        </div>
-        <div class="tod-frac" id="tod-morning">0/4</div>
-        <div class="tod-sub">návykov</div>
-      </div>
-      <div class="tod-card" onclick="navTo('kindle')">
-        <div class="tod-header">
-          <span class="tod-icon">☀️</span>
-          <span class="tod-name" style="color:var(--day)">Deň</span>
-        </div>
-        <div class="tod-frac" id="tod-day">0/3</div>
-        <div class="tod-sub">návykov</div>
-      </div>
-      <div class="tod-card" onclick="navTo('kindle')">
-        <div class="tod-header">
-          <span class="tod-icon">🌙</span>
-          <span class="tod-name" style="color:var(--evening)">Večer</span>
-        </div>
-        <div class="tod-frac" id="tod-evening">0/3</div>
-        <div class="tod-sub">návykov</div>
-      </div>
-    </div>
 
   </div>
 
@@ -1901,10 +1888,10 @@
 
     <!-- Avg -->
     <div class="avg-card">
-      <div class="avg-num" id="avg-num">64%</div>
+      <div class="avg-num" id="avg-num">0%</div>
       <div class="avg-right">
         <div class="avg-lbl">Priemerná dokončenosť</div>
-        <div class="avg-sub">Za posledných 7 dní. <br>Trend: <span style="color:var(--go)">+12% oproti minulému týždňu</span></div>
+        <div class="avg-sub" id="avg-sub">Za posledných 7 dní.</div>
       </div>
     </div>
 
@@ -1940,31 +1927,27 @@
     <!-- Stats 2col -->
     <div class="stats2">
       <div class="s2c">
-        <div class="s2c-val">14</div>
+        <div class="s2c-val" id="stats-streak">0</div>
         <div class="s2c-lbl">🔥 Streak</div>
       </div>
       <div class="s2c">
-        <div class="s2c-val">31</div>
+        <div class="s2c-val" id="stats-record">0</div>
         <div class="s2c-lbl">⭐ Rekord</div>
       </div>
       <div class="s2c">
-        <div class="s2c-val">6,4</div>
+        <div class="s2c-val" id="stats-avg">0</div>
         <div class="s2c-lbl">📊 Priemer / deň</div>
       </div>
       <div class="s2c">
-        <div class="s2c-val">847</div>
+        <div class="s2c-val" id="stats-pts">0</div>
         <div class="s2c-lbl">✦ Flame body</div>
       </div>
     </div>
 
     <!-- Lookback -->
-    <div class="lookback">
+    <div class="lookback" id="lookback-card" style="display:none">
       <div class="lb-tag">✦ Obzri sa späť</div>
-      <div class="lb-txt">
-        Pred 3 mesiacmi si dosahoval <span class="hl">2,8/10</span> návykov denne.
-        Dnes je to <span class="hl">6,4/10</span> — tvoj plameň je
-        <span class="hl">2× silnejší</span> ako bol. Tak sa to robí.
-      </div>
+      <div class="lb-txt" id="lookback-txt"></div>
     </div>
 
     <!-- Weak day insight -->
@@ -1996,18 +1979,18 @@
       <div class="profil-av">🔥</div>
       <div>
         <div class="profil-nm">Môj profil</div>
-        <div class="profil-lvl" id="profil-lvl">Plameň · Úroveň 12</div>
-        <div class="profil-pts" id="profil-pts">847 Flame bodov celkovo</div>
+        <div class="profil-lvl" id="profil-lvl">Iskra · Úroveň 1</div>
+        <div class="profil-pts" id="profil-pts">0 Flame bodov celkovo</div>
       </div>
     </div>
 
     <!-- Level progress -->
     <div class="lvl-card">
       <div class="lvl-row">
-        <div class="lvl-nm" id="lvl-progress-nm">Plameň → Búrka</div>
-        <div class="lvl-nx" id="lvl-progress-pts">847 / 1 500</div>
+        <div class="lvl-nm" id="lvl-progress-nm">Iskra → Zápal</div>
+        <div class="lvl-nx" id="lvl-progress-pts">0 / 100</div>
       </div>
-      <div class="lvl-track"><div class="lvl-fill" style="width:56%"></div></div>
+      <div class="lvl-track"><div class="lvl-fill" id="lvl-fill" style="width:0%"></div></div>
     </div>
 
     <!-- 90-day challenge -->
@@ -2360,19 +2343,19 @@
    DATA
 ───────────────────────────── */
 const HABITS = [
-  { id:0, name:'Zdravá strava', icon:'🥗', streak:14, done:false,
+  { id:0, name:'Zdravá strava', icon:'🥗', streak:0, done:false,
     why:'Črevný mikrobióm riadi náladu, imunitu aj energiu — strava je základ všetkého ostatného.',
     facts:['Črevné baktérie produkujú 95 % serotonínu — strava priamo riadi tvoju náladu.','Omega-3 mastné kyseliny znižujú zápal v mozgu a chránia pred depresiou.','Antioxidanty v ovocí a zelenine chránia DNA buniek pred oxidačným stresom.','Vláknina kŕmi prospešné baktérie, ktoré produkujú vitamíny skupiny B.','Magnézium v listovej zelenine je kofaktor pre 300 enzymatických reakcií v tele.','Fermentované potraviny zvyšujú diverzitu mikrobiómu až o 30 %.','Chróm zo zeleniny stabilizuje hladinu cukru a predchádza energetickým výkyvom.'] },
 
-  { id:1, name:'Cvičenie', icon:'💪', streak:8, done:false,
+  { id:1, name:'Cvičenie', icon:'💪', streak:0, done:false,
     why:'Pohyb je najsilnejší liek bez receptu — mení mozog, telo aj náladu súčasne.',
     facts:['30 min pohybu stimuluje BDNF — proteín, ktorý buduje nové nervové spojenia.','Cvičenie zvyšuje dopamín, noradrenalín aj serotonín súčasne — prirodzený antidepresív.','Aeróbna aktivita zväčšuje hipokampus a spomaľuje starnutie mozgu.','Pravidelný pohyb znižuje riziko Alzheimera až o 50 %.','Cvičenie ráno zvyšuje schopnosť koncentrácie o 20 % počas celého dňa.','Každých 30 min pohybu predlžuje teloméry — biologický marker dlhovekosti.','Silový tréning zvyšuje produkciu testosterónu a GH prirodzene.'] },
 
-  { id:2, name:'Strečing', icon:'🤸', streak:5, done:false,
+  { id:2, name:'Strečing', icon:'🤸', streak:0, done:false,
     why:'Fascia a flexibilita ovplyvňujú nervový systém, chronickú bolesť aj zdravie srdca.',
     facts:['Fascia má 10× viac nervov ako svaly — strečing priamo ovplyvňuje nervový systém.','Pravidelný strečing znižuje kortizol (stresový hormón) až o 25 %.','Uvoľnenie iliopsoas svalu priamo zmierňuje chronickú bolesť chrbta.','Strečing aktivuje parasympatický nervový systém — telo prepína do regenerácie.','Mobilita bedier ovplyvňuje držanie tela, dýchanie aj okysličenie celého tela.','10 minút denne znižuje riziko svalovej zraniteľnosti o 40 %.','Flexibilita koreluje s elasticitou artérií — priamy indikátor zdravia srdca.'] },
 
-  { id:3, name:'Dychové cvičenia', icon:'🌬️', streak:21, done:false,
+  { id:3, name:'Dychové cvičenia', icon:'🌬️', streak:0, done:false,
     why:'Dych je jediná autonómna funkcia, ktorú vieš vedome ovládať — brána k nervovému systému.',
     facts:['Aktivuje nervus vagus do 90 sekúnd — priamy prepínač do pokoja.','Zvyšuje variabilitu srdcovej frekvencie — kľúčový indikátor odolnosti voči stresu.','Box breathing (4-4-4-4) znižuje kortizol rovnako účinne ako 20 min meditácie.','Pomalé dýchanie aktivuje parasympatikus a znižuje krvný tlak do 5 minút.','Nosové dýchanie produkuje oxid dusnatý, ktorý rozširuje cievy o 15 %.','Wim Hof metóda preukázateľne zvyšuje imunitu a odolnosť voči ochoreniam.','5 minút cvičenia pred spaním skracuje čas zasnutia o 30 %.'] },
 
@@ -2380,43 +2363,43 @@ const HABITS = [
     why:'Chladná voda je najrýchlejší legálny spôsob ako zvýšiť dopamín, energiu a imunitu.',
     facts:['Zvyšuje hladinu dopamínu až o 250 % — dlhšie a stabilnejšie ako kofeín.','Aktivuje hnedé tukové tkanivo, ktoré spaľuje kalórie na teplo.','Znižuje zápal v tele — dostupná forma kryoterapie každý deň.','Zvyšuje noradrenalín o 300 % — zlepšuje fokus a energiu na hodiny.','Posilňuje imunitu — o 29 % menej chorôb u pravidelných praktizantov.','Trénuje cievy — striedavá teplota zlepšuje cirkuláciu ako cvičenie svalov.','Huberman: studená sprcha ráno je najsilnejší legálny dopamínový boost dňa.'] },
 
-  { id:5, name:'Hydratácia', icon:'💧', streak:3, done:false,
+  { id:5, name:'Hydratácia', icon:'💧', streak:0, done:false,
     why:'Mozog je z 75 % voda — bez hydratácie spomaľuje myslenie, pamäť aj náladu.',
     facts:['Už 2 % dehydratácia znižuje kognitívny výkon a sústredenie merateľne.','Mozog tvorí z 75 % voda — hydratácia priamo ovplyvňuje rýchlosť myslenia.','Pitie vody ráno nalačno spúšťa metabolizmus a odplavuje nočné toxíny.','Dostatočná hydratácia znižuje únavu o 20 % — dehydratácia je jej najčastejšia príčina.','Voda je potrebná pre syntézu ATP — energetickej meny každej bunky v tele.','Sliznica tráviaceho traktu sa obnovuje každých 3–5 dní, hydratácia urýchľuje obnovu.','500 ml vody zvyšuje metabolizmus o 30 % na nasledujúcu hodinu.'] },
 
-  { id:6, name:'Čítanie', icon:'📚', streak:11, done:false,
+  { id:6, name:'Čítanie', icon:'📚', streak:0, done:false,
     why:'Čítanie buduje mozog, empatiu a poznanie — najlacnejší a najúčinnejší upgrade mysle.',
     facts:['Aktivuje rovnaké oblasti mozgu ako reálne zážitky — mozog doslova žije príbeh.','6 minút čítania znižuje stres o 68 % — viac ako hudba alebo prechádzka.','Buduje slovnú zásobu, empatiu a analytické myslenie súčasne.','Ľudia čítajúci pravidelne žijú v priemere o 2 roky dlhšie (Yale štúdia, 2016).','Čítanie pred spaním namiesto obrazovky skracuje čas zasnutia o 39 %.','Literárna fikcia zvyšuje schopnosť chápať emócie iných (Theory of Mind).','20 strán denne = 20 kníh ročne = exponenciálny rast poznania a perspektívy.'] },
 
-  { id:7, name:'Dobrý skutok', icon:'⭐', streak:3, done:false,
+  { id:7, name:'Dobrý skutok', icon:'⭐', streak:0, done:false,
     why:'Pomáhanie aktivuje centrum odmeny v mozgu — dobrý skutok je doslova návykový.',
     facts:['Pomáhanie spúšťa centrum odmeny mozgu rovnako silno ako jedlo alebo sex.','Altruizmus zvyšuje oxytocín — hormón dôvery a sociálnej väzby.','Helper\'s high — reálny neurochemický stav po pomoci, podobný runner\'s high.','Dobrovoľníci žijú dlhšie a majú preukázateľne nižšiu mieru depresie.','Dobrý skutok vyvolá reťazovú reakciu — priemerný príjemca pomôže ďalším 3.','Vďačnosť a pomáhanie aktivujú mediálny PFC — sídlo dlhodobej spokojnosti.','Aj malý akt láskavosti znižuje zápalové markery CRP v krvi merateľne.'] },
 
-  { id:8, name:'Relax', icon:'😌', streak:7, done:false,
+  { id:8, name:'Relax', icon:'😌', streak:0, done:false,
     why:'Zámerný relax nie je lenivosť — je to aktívny biologický proces obnovy mozgu aj tela.',
     facts:['Zámerný relax fyzicky chráni hipokampus pred kortizolom a neurálnou atrofiou.','Default Mode Network — sieť aktívna pri odpočinku — spracúva emócie a spomienky.','Polhodinový odpočinok po obede zvyšuje produktivitu odpoludnia o 34 %.','Relax je aktívny biologický proces — bunky sa regenerujú iba v pokoji.','Flow stav je dosiahnuteľný len po dostatočnom odpočinku — únava ho blokuje.','Zámerný oddych obnovuje glykogén v prefrontálnom kortexe — palivo rozhodovania.','Chronický nedostatok relaxu zvyšuje riziko kardiovaskulárnych chorôb o 48 %.'] },
 
-  { id:9, name:'Učenie', icon:'🧠', streak:2, done:false,
+  { id:9, name:'Učenie', icon:'🧠', streak:0, done:false,
     why:'Každá nová zručnosť fyzicky mení štruktúru mozgu — neuroplasticita v každodennej akcii.',
     facts:['Neuroplasticita vrcholí dopoludnia — mozog sa najľahšie mení 2–4 h po vstávaní.','Spacing effect: krátke učenie rozložené v čase je 2× efektívnejšie ako maratón.','Každá nová zručnosť fyzicky buduje nové synaptické spojenia v mozgu.','Feynman technika: vysvetli pojem jednoducho — najrýchlejší test skutočného porozumenia.','Retrieval practice (testovanie) je o 50 % efektívnejšia ako opätovné čítanie.','Učenie novej veci zvyšuje dopamínové receptory — mozog ťa odmeňuje za rast.','Aktívne celoživotné učenie znižuje riziko demencie o 35 % (Lancet, 2020).'] },
 
-  { id:10, name:'Prechádzka', icon:'🚶', streak:6, done:false,
+  { id:10, name:'Prechádzka', icon:'🚶', streak:0, done:false,
     why:'Chôdza je evolučne optimalizovaný pohyb — zlepšuje kreativitu, cirkuláciu aj náladu.',
     facts:['20 minút chôdze zvyšuje kreativitu o 81 % — Stanford štúdia, 2014.','Walking meeting: pohyb počas rozhovoru preukázateľne zvyšuje kvalitu nápadov.','Chôdza v prírode znižuje ruminatívne myslenie a aktivitu stresových centier mozgu.','Lýtkové svaly fungujú ako druhé srdce — pumpa pre celú cirkuláciu v tele.','7 500 krokov denne znižuje celkovú mortalitu o 60 % oproti sedavému životu.','Slnečné svetlo počas chôdze synchronizuje cirkadiánny rytmus a zlepšuje spánok.','Chôdza po jedle znižuje glykemický index jedla o 30 % — ochrana pred DM2.'] },
 
-  { id:11, name:'Čas s blízkymi', icon:'❤️', streak:14, done:false,
+  { id:11, name:'Čas s blízkymi', icon:'❤️', streak:0, done:false,
     why:'Kvalita vzťahov je podľa 85-ročnej Harvard štúdie najsilnejší prediktor šťastia a zdravia.',
     facts:['Harvard 85r. štúdia: kvalita vzťahov je najsilnejší prediktor dlhého šťastného života.','Sociálna izolácia je zdravotne rovnako škodlivá ako fajčenie 15 cigariet denne.','Oxytocín pri kontakte s blízkymi znižuje krvný tlak a systémový zápal.','Ľudia s pevnými vzťahmi majú o 50 % vyššiu šancu prežiť závažné ochorenie.','Zdieľanie emócií s blízkymi zmenšuje aktivitu amygdaly — centra strachu.','Fyzický kontakt (objatie) zvyšuje imunitu a skracuje trvanie ochorení.','Kvalitné vzťahy predpovedajú životnú spokojnosť lepšie ako kariéra či peniaze.'] },
 
-  { id:12, name:'Vďačnosť', icon:'🙏', streak:19, done:false,
+  { id:12, name:'Vďačnosť', icon:'🙏', streak:0, done:false,
     why:'Vďačnosť je neuroplastický nástroj — doslova prepisuje mozog, aby vyhľadával dobré.',
     facts:['Pretrénuje mozgový negativity bias — mozog sa učí aktívne vyhľadávať pozitívne.','Denník vďačnosti znižuje symptómy depresie o 28 % za 3 týždne praxe.','Vďačnosť aktivuje dopamín aj serotonín súčasne — prirodzený dvojitý boost nálady.','Vďační ľudia spia lepšie, majú viac energie a menej ochorejú.','Vyjadrenie uznania zvyšuje pravdepodobnosť pomoci od iných o 50 %.','Vďační ľudia si všimnú viac dobrého — pozitívna neurálna spätná väzba.','3 veci za deň po 21 dňoch fyzicky mení sieťové prepojenia v mozgu.'] },
 
-  { id:13, name:'Kvalitný spánok', icon:'🌙', streak:6, done:false,
+  { id:13, name:'Kvalitný spánok', icon:'🌙', streak:0, done:false,
     why:'Spánok čistí mozog, konsoliduje pamäť a reguluje každý hormón v tele — nie je to luxus.',
     facts:['Mozog čistí toxíny 10× efektívnejšie v spánku cez gliálny lymfatický systém.','Nedostatok spánku znižuje IQ o 5–8 bodov na druhý deň — merateľné zhoršenie.','REM spánok konsoliduje spomienky a spracúva emócie z celého dňa.','Spánok pred polnocou je 2× regeneratívnejší vďaka vrcholu sekrécie GH.','Chronická spánková deprivácia zvyšuje riziko obezity, diabetu a Alzheimera.','8 hodín spánku zvyšuje imunitu — T-bunky fungujú o 30 % efektívnejšie.','Spánok reguluje leptín a ghrelin — hormóny hladu, sýtosti a chutí.'] },
 
-  { id:14, name:'Príprava na zajtra', icon:'🗓️', streak:1, done:false,
+  { id:14, name:'Príprava na zajtra', icon:'🗓️', streak:0, done:false,
     why:'Večerná príprava eliminuje ranné rozhodovacie napätie a znižuje kortizol od rána.',
     facts:['Znižuje ranné rozhodovanie — Decision Fatigue je reálny neurologický jav.','Zápisok 3 priorít večer znižuje ranný kortizol o 20 % oproti improvizácii.','Večerná rutina signalizuje mozgu koniec dňa — urýchľuje nástup spánku.','Prepared mind effect: mozog plán spracúva v spánku — ráno máš riešenia.','Príprava večer skracuje ranné prípravy o 15 min — menej ranného chaosu.','Revízia uplynulého dňa aktivuje Systém 2 myslenia — hlbšie poučenie.','Zoznam na zajtra znižuje ruminatívne myšlienky v noci — mozog uvoľní plán.'] },
 ];
@@ -2554,18 +2537,18 @@ const CHART_LABELS = {
 };
 
 const LEVELS = [
-  { icon:'✨', name:'Iskra',   pts:'0 – 100',         done:true  },
-  { icon:'💛', name:'Zápal',   pts:'101 – 500',       done:true  },
-  { icon:'🔥', name:'Plameň', pts:'501 – 1 500',     current:true },
-  { icon:'⚡', name:'Búrka',   pts:'1 501 – 4 000',  done:false },
-  { icon:'🌟', name:'Žiar',    pts:'4 001 – 8 000',  done:false },
-  { icon:'🌋', name:'Erupcia', pts:'8 001 – 15 000', done:false },
-  { icon:'☀️', name:'Legenda', pts:'15 001+',        done:false },
+  { icon:'✨', name:'Iskra',   pts:'0 – 100',         min:0,     max:100,   current:true },
+  { icon:'💛', name:'Zápal',   pts:'101 – 500',       min:101,   max:500,   done:false },
+  { icon:'🔥', name:'Plameň', pts:'501 – 1 500',     min:501,   max:1500,  done:false },
+  { icon:'⚡', name:'Búrka',   pts:'1 501 – 4 000',  min:1501,  max:4000,  done:false },
+  { icon:'🌟', name:'Žiar',    pts:'4 001 – 8 000',  min:4001,  max:8000,  done:false },
+  { icon:'🌋', name:'Erupcia', pts:'8 001 – 15 000', min:8001,  max:15000, done:false },
+  { icon:'☀️', name:'Legenda', pts:'15 001+',        min:15001, max:99999, done:false },
 ];
 
 const BADGES = [
-  { name:'Prvý knôt',    icon:'🕯️', earned:true  },
-  { name:'Týždeň v ohni',icon:'🔥', earned:true  },
+  { name:'Prvý knôt',    icon:'🕯️', earned:false },
+  { name:'Týždeň v ohni',icon:'🔥', earned:false },
   { name:'Nezhasnutý',   icon:'⭐', earned:false },
   { name:'Všetkých 10',  icon:'💎', earned:false },
   { name:'Solstícia',    icon:'☀️', earned:false },
@@ -3091,9 +3074,76 @@ function updateAll() {
   if (ringLbl) ringLbl.textContent = `z ${total}`;
 
   // Points — animovaný counter
-  const pts = 847 + s * 5;
+  const pts = s * 5;
   animateNum(document.getElementById('home-pts'), pts, 500);
   document.getElementById('profil-pts').textContent = pts + ' Flame bodov celkovo';
+
+  // Home streak — max streak spomedzi aktívnych návykov
+  const activeHabits = HABITS.filter(h => h.active !== false);
+  const maxStreak = activeHabits.length > 0 ? Math.max(...activeHabits.map(h => h.streak)) : 0;
+  const homeStreakEl = document.getElementById('home-streak');
+  if (homeStreakEl) homeStreakEl.textContent = maxStreak;
+
+  // Compute current level from pts and update all level-related UI
+  let curLvlIdx = 0;
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (pts >= LEVELS[i].min) { curLvlIdx = i; break; }
+  }
+  // Update LEVELS current/done flags
+  LEVELS.forEach((l, i) => {
+    delete l.current; delete l.done;
+    if (i < curLvlIdx) l.done = true;
+    else if (i === curLvlIdx) l.current = true;
+    else l.done = false;
+  });
+  const curLvl  = LEVELS[curLvlIdx];
+  const nextLvl = LEVELS[curLvlIdx + 1];
+
+  // Home stats strip level
+  const homeLvlEl = document.getElementById('home-lvl');
+  const homeLvlLbl = document.getElementById('home-lvl-lbl');
+  if (homeLvlEl)  homeLvlEl.textContent  = curLvl.name;
+  if (homeLvlLbl) homeLvlLbl.textContent = '⚡ Úroveň ' + (curLvlIdx + 1);
+
+  // Profile header
+  const profilLvlEl = document.getElementById('profil-lvl');
+  if (profilLvlEl) profilLvlEl.textContent = curLvl.name + ' · Úroveň ' + (curLvlIdx + 1);
+
+  // Level progress bar
+  const lvlNmEl  = document.getElementById('lvl-progress-nm');
+  const lvlPtsEl = document.getElementById('lvl-progress-pts');
+  const lvlFill  = document.getElementById('lvl-fill');
+  if (nextLvl) {
+    const ptsInLvl  = pts - curLvl.min;
+    const lvlRange  = nextLvl.min - curLvl.min;
+    const pct       = Math.min(100, Math.round(ptsInLvl / lvlRange * 100));
+    if (lvlNmEl)  lvlNmEl.textContent  = curLvl.name + ' → ' + nextLvl.name;
+    if (lvlPtsEl) lvlPtsEl.textContent = pts + ' / ' + nextLvl.min;
+    if (lvlFill)  lvlFill.style.width  = pct + '%';
+  } else {
+    if (lvlNmEl)  lvlNmEl.textContent  = curLvl.name + ' — Max úroveň!';
+    if (lvlPtsEl) lvlPtsEl.textContent = pts + ' bodov';
+    if (lvlFill)  lvlFill.style.width  = '100%';
+  }
+
+  // Stats2 section
+  const statsStreak = document.getElementById('stats-streak');
+  const statsRecord = document.getElementById('stats-record');
+  const statsAvg    = document.getElementById('stats-avg');
+  const statsPts    = document.getElementById('stats-pts');
+  if (statsStreak) statsStreak.textContent = maxStreak;
+  if (statsRecord) statsRecord.textContent = maxStreak; // best is current max on fresh install
+  if (statsAvg) {
+    const hist = loadHistory();
+    const keys = Object.keys(hist);
+    if (keys.length > 0) {
+      const total = keys.reduce((sum, k) => sum + hist[k].length, 0);
+      statsAvg.textContent = (total / keys.length).toFixed(1).replace('.',',');
+    } else {
+      statsAvg.textContent = '0';
+    }
+  }
+  if (statsPts) statsPts.textContent = pts;
 
   // Time-of-day fracs — rátame len aktívne návyky
   GROUPS.forEach((g, gi) => {
@@ -3933,7 +3983,7 @@ const LEADERBOARD = [
   { rank:3, name:'Tomáš R.',  av:'🔥', pts:2510, streak:24, medal:'🥉', award:'Bronzový plameň'     },
   { rank:4, name:'Petra S.',  av:'⭐', pts:2200, streak:21 },
   { rank:5, name:'Lukáš B.',  av:'✦',  pts:1980, streak:18 },
-  { rank:6, name:'Ja',        av:'👤', pts:null, streak:14, isMe:true },
+  { rank:6, name:'Ja',        av:'👤', pts:null, streak:0,  isMe:true },
   { rank:7, name:'Zuzana T.', av:'🌙', pts:820,  streak:12 },
   { rank:8, name:'Martin O.', av:'💪', pts:650,  streak:9  },
 ];
@@ -3948,7 +3998,7 @@ function renderLeaderboard() {
     const now = new Date();
     lbTitle.textContent = `🏆 Rebríček — ${months[now.getMonth()]} ${now.getFullYear()}`;
   }
-  const myPts = 847 + score() * 5;
+  const myPts = score() * 5;
 
   LEADERBOARD.forEach(u => {
     const pts  = u.isMe ? myPts : u.pts;
@@ -4851,7 +4901,7 @@ function showInviteToast() {
 ───────────────────────────── */
 function openShare() {
   const s   = score();
-  const pts = 847 + s * 5;
+  const pts = s * 5;
   const topHabits = HABITS.filter(h => h.streak > 5 && h.active !== false)
     .sort((a,b) => b.streak - a.streak).slice(0,4);
 
