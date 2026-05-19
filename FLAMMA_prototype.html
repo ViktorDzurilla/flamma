@@ -1850,6 +1850,33 @@
       <svg class="sparkline-svg" id="sparkline-svg" viewBox="0 0 300 50" preserveAspectRatio="none"></svg>
     </div>
 
+    <!-- Time-of-day summary -->
+    <div class="tod-row">
+      <div class="tod-card" onclick="navTo('kindle')">
+        <div class="tod-header">
+          <span class="tod-icon">🌅</span>
+          <span class="tod-name" style="color:var(--morning)">Ráno</span>
+        </div>
+        <div class="tod-frac" id="tod-morning">0/0</div>
+        <div class="tod-sub">návykov</div>
+      </div>
+      <div class="tod-card" onclick="navTo('kindle')">
+        <div class="tod-header">
+          <span class="tod-icon">☀️</span>
+          <span class="tod-name" style="color:var(--day)">Deň</span>
+        </div>
+        <div class="tod-frac" id="tod-day">0/0</div>
+        <div class="tod-sub">návykov</div>
+      </div>
+      <div class="tod-card" onclick="navTo('kindle')">
+        <div class="tod-header">
+          <span class="tod-icon">🌙</span>
+          <span class="tod-name" style="color:var(--evening)">Večer</span>
+        </div>
+        <div class="tod-frac" id="tod-evening">0/0</div>
+        <div class="tod-sub">návykov</div>
+      </div>
+    </div>
 
   </div>
 
