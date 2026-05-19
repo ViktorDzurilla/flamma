@@ -1679,6 +1679,20 @@
         position: fixed !important;
         top: 0 !important; left: 0 !important;
       }
+      /* Skry falošný status bar — na telefóne je reálny */
+      .statusbar { display: none !important; }
+
+      /* Obsah siaha od vrchu (pod notch) po navbar */
+      .screen {
+        top: env(safe-area-inset-top, 0px) !important;
+        bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+
+      /* Navbar — pridaj priestor pre home indicator */
+      .bnav {
+        height: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+      }
     }
 
   </style>
