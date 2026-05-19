@@ -870,14 +870,6 @@
     .sec-done-sub   { font-size: 11px; color: var(--tx2); margin-top: 2px; }
 
 
-    /* ── SPARKLINE ── */
-    .sparkline-card { margin:10px 20px 0; background:var(--bg2); border-radius:16px; padding:12px 16px; border:1px solid rgba(255,255,255,.04); }
-    .spark-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-    .spark-title { font-size:11px; font-weight:700; }
-    .spark-legend { display:flex; gap:10px; }
-    .spark-leg { font-size:9px; font-weight:600; color:var(--tx2); display:flex; align-items:center; gap:4px; }
-    .spark-leg-dot { width:10px; height:3px; border-radius:2px; }
-    .sparkline-svg { width:100%; height:52px; display:block; }
 
     /* ── WIDGET OVERLAY ── */
     .widget-overlay { position:absolute; inset:0; background:rgba(0,0,0,.88); z-index:700; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .25s; }
@@ -1389,12 +1381,6 @@
     }
     .settings-btn:active { transform: scale(.88); }
 
-    /* ══════════════════════════════
-       SPARKLINE CARD IMPROVED
-    ══════════════════════════════ */
-    .sparkline-card {
-      box-shadow: 0 3px 14px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.04);
-    }
 
 
     /* ══════════════════════════════
@@ -1791,17 +1777,6 @@
       </div>
     </div>
 
-    <!-- Sparkline -->
-    <div class="sparkline-card">
-      <div class="spark-hdr">
-        <div class="spark-title">Tento vs minulý týždeň</div>
-        <div class="spark-legend">
-          <div class="spark-leg"><div class="spark-leg-dot" style="background:var(--or)"></div>Teraz</div>
-          <div class="spark-leg"><div class="spark-leg-dot" style="background:#444"></div>Minulý</div>
-        </div>
-      </div>
-      <svg class="sparkline-svg" id="sparkline-svg" viewBox="0 0 300 50" preserveAspectRatio="none"></svg>
-    </div>
 
     <!-- Time-of-day summary -->
     <div class="tod-row">
@@ -4018,42 +3993,8 @@ function renderDailyPlan() {}
 /* ─────────────────────────────
    SPARKLINE
 ───────────────────────────── */
-function renderSparkline() {
-  const svg = document.getElementById('sparkline-svg');
-  if (!svg) return;
-  const W = 300, H = 50, pad = 6;
-  const thisW = CHART_DATA['7'];
-  const lastW = LAST_WEEK_DATA;
-  const pts = (data) => data.map((v, i) => ({
-    x: pad + i * (W - pad * 2) / (data.length - 1),
-    y: H - pad - (v / 100) * (H - pad * 2)
-  }));
-  const path = (pts, close = false) => {
-    let d = `M ${pts[0].x} ${pts[0].y}`;
-    for (let i = 1; i < pts.length; i++) {
-      const cpx = (pts[i-1].x + pts[i].x) / 2;
-      d += ` C ${cpx} ${pts[i-1].y} ${cpx} ${pts[i].y} ${pts[i].x} ${pts[i].y}`;
-    }
-    if (close) d += ` L ${pts[pts.length-1].x} ${H} L ${pts[0].x} ${H} Z`;
-    return d;
-  };
-  const tp = pts(thisW), lp = pts(lastW);
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="spGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#FF5500" stop-opacity=".3"/>
-        <stop offset="100%" stop-color="#FF5500" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="spLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#FF5500"/>
-        <stop offset="100%" stop-color="#FFD700"/>
-      </linearGradient>
-    </defs>
-    <path d="${path(tp, true)}" fill="url(#spGrad)"/>
-    <path d="${path(lp)}" fill="none" stroke="#444" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="${path(tp)}" fill="none" stroke="url(#spLineGrad)" stroke-width="2" stroke-linecap="round"/>
-    ${tp.map((p,i) => `<circle cx="${p.x}" cy="${p.y}" r="${i===tp.length-1?3.5:2}" fill="${i===tp.length-1?'#FFD700':'#FF5500'}"/>`).join('')}`;
-}
+/* renderSparkline — removed */
+function renderSparkline() {}
 
 /* ─────────────────────────────
    WIDGET
