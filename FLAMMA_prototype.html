@@ -3062,16 +3062,33 @@ function getDisplayDate() {
 function changeDay(delta) {
   if (currentDayOffset + delta > 0) return;
   currentDayOffset += delta;
+
   const dt = getDisplayDate();
   document.getElementById('dday').textContent  = dt.day;
   document.getElementById('dfull').textContent = dt.full;
-  document.getElementById('kindle-sub').textContent = dt.short;
+  const kindleSub = document.getElementById('kindle-sub');
+  if (kindleSub) kindleSub.textContent = dt.short;
 
   const isPast = currentDayOffset < 0;
   document.getElementById('past-banner').classList.toggle('show', isPast);
   document.getElementById('s-home').classList.toggle('readonly', isPast);
   document.getElementById('s-kindle').classList.toggle('readonly', isPast);
-  updateReminder();
+
+  if (isPast) {
+    // Načítaj historické dáta pre zvolený deň
+    const d = new Date();
+    d.setDate(d.getDate() + currentDayOffset);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const history = loadHistory();
+    const doneThatDay = history[key] || [];
+    HABITS.forEach(h => { h.done = doneThatDay.includes(h.id); });
+  } else {
+    // Dnešok — obnov skutočný stav
+    loadTodayState();
+  }
+
+  updateAll();
+  updateMotivation();
 }
 
 /* ─────────────────────────────

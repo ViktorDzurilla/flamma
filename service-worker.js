@@ -1,9 +1,9 @@
 /* ══════════════════════════════════════
-   FLAMMA — Service Worker v12.0
+   FLAMMA — Service Worker v13.0
    Cache-first stratégia pre offline použitie
 ══════════════════════════════════════ */
 
-const CACHE_NAME = 'flamma-v12';
+const CACHE_NAME = 'flamma-v13';
 const CACHE_URLS = [
   './FLAMMA_prototype.html',
   './manifest.json',
