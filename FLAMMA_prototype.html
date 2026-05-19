@@ -973,13 +973,6 @@
     .breath-ctrl-btn:active { opacity: .82; transform: scale(.97); }
     .breath-ctrl-btn.paused { background: var(--bg3); color: var(--tx2); }
 
-    /* ── MORNING BRIEF ── */
-    .morning-brief { margin: 6px 20px 0; background: linear-gradient(135deg, rgba(255,140,0,.1), var(--bg2)); border: 1px solid rgba(255,140,0,.22); border-radius: 18px; padding: 13px 16px; }
-    .mb-greeting { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: var(--am); text-transform: uppercase; margin-bottom: 3px; }
-    .mb-title { font-size: 15px; font-weight: 800; margin-bottom: 10px; }
-    .mb-priorities { display: flex; flex-direction: column; gap: 5px; }
-    .mb-prio { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,.04); border-radius: 10px; padding: 6px 10px; }
-    .mb-prio-ic { font-size: 16px; flex-shrink: 0; }
     .mb-prio-nm { flex: 1; }
     .mb-prio-done { font-size: 11px; color: var(--go); font-weight: 700; }
 
@@ -1738,12 +1731,6 @@
       <div class="ring-motivation" id="ring-motivation"></div>
     </div>
 
-    <!-- Morning brief -->
-    <div class="morning-brief" id="morning-brief">
-      <div class="mb-greeting" id="mb-greeting">Dobré ráno</div>
-      <div class="mb-title" id="mb-title">Na čo sa dnes zamerať?</div>
-      <div class="mb-priorities" id="mb-priorities"></div>
-    </div>
 
     <!-- Burnout card -->
     <div class="burnout-card" id="burnout-card">
@@ -4599,42 +4586,8 @@ function breathFinish() {
 /* ─────────────────────────────
    MORNING BRIEF
 ───────────────────────────── */
-function renderMorningBrief() {
-  const h = new Date().getHours();
-  const greetEl = document.getElementById('mb-greeting');
-  const titleEl = document.getElementById('mb-title');
-  const prios   = document.getElementById('mb-priorities');
-  if (!greetEl) return;
-
-  const greeting = h < 12 ? 'Dobré ráno ☀️' : h < 18 ? 'Dobrý deň 💪' : 'Dobrý večer 🌙';
-  const titleTxt = h < 12
-    ? 'Ranná rutina ťa naštartuje na celý deň'
-    : h < 18 ? 'Ešte stihneš dokončiť denné návyky'
-    : 'Večerná rutina uzavrie dnešný deň';
-  greetEl.textContent = greeting;
-  titleEl.textContent = titleTxt;
-
-  prios.innerHTML = '';
-  const gIdx  = h < 12 ? 0 : h < 18 ? 1 : 2;
-  const shown = [];
-  for (let g = gIdx; g < GROUPS.length && shown.length < 3; g++) {
-    GROUPS[g].ids.forEach(id => {
-      const hh = habitById(id);
-      if (shown.length < 3 && hh && hh.active !== false) shown.push(id);
-    });
-  }
-  shown.forEach(id => {
-    const hab = habitById(id);
-    if (!hab) return;
-    const div = document.createElement('div');
-    div.className = 'mb-prio' + (hab.done ? '' : '');
-    div.innerHTML = `<div class="mb-prio-ic">${hab.icon}</div>
-      <div class="mb-prio-nm">${hab.name}</div>
-      <div class="mb-prio-done">${hab.done ? '✓' : ''}</div>`;
-    div.onclick = () => openDetail(id);
-    prios.appendChild(div);
-  });
-}
+/* renderMorningBrief — removed */
+function renderMorningBrief() {}
 
 /* ─────────────────────────────
    HABIT COMBOS
