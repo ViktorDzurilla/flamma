@@ -4784,40 +4784,34 @@ function renderC90() {
 function renderDuet() {
   const el = document.getElementById('duet-card');
   if (!el) return;
-  const d = DUET_DATA;
-
-  const dayHTML = (days) => days.map((v, i) => {
-    const cls = i === 6 ? 'today' : v ? 'done' : 'miss';
-    const lbl = ['P','U','S','Š','Pi','So','D'][i];
-    return `<div class="duet-day ${cls}">${v && i < 6 ? '✓' : lbl}</div>`;
-  }).join('');
-
-  const myStreak     = [...d.myDays].reverse().findIndex(v => !v);
-  const friendStreak = [...d.friendDays].reverse().findIndex(v => !v);
-  const myS     = myStreak === -1 ? 7 : myStreak;
-  const friendS = friendStreak === -1 ? 7 : friendStreak;
 
   el.innerHTML = `
-    <div class="duet-tag">Aktívna výzva — 7 dní Cvičenia</div>
-    <div class="duet-row">
-      <div class="duet-av">👤</div>
-      <div class="duet-info">
-        <div class="duet-name">Ty <span style="font-size:10px;color:var(--or)">🔥 ${myS}-dňový streak</span></div>
-        <div class="duet-habit">${d.friend.habit}</div>
+    <div style="text-align:center;padding:8px 0 4px">
+      <div style="font-size:36px;margin-bottom:10px">👥</div>
+      <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:6px">Výzva s priateľom</div>
+      <div style="font-size:11px;color:var(--tx2);line-height:1.6;margin-bottom:18px">
+        Ľudia, ktorí plnia návyky s niekým iným, vydržia <strong style="color:var(--or)">2× dlhšie</strong>.<br>
+        Pozvi priateľa a súťažte spolu — kto vydrží viac dní v rade?
       </div>
-    </div>
-    <div class="duet-days">${dayHTML(d.myDays)}</div>
-    <div class="duet-divider"></div>
-    <div class="duet-row">
-      <div class="duet-av">${d.friend.av}</div>
-      <div class="duet-info">
-        <div class="duet-name">${d.friend.name} <span style="font-size:10px;color:var(--am)">🔥 ${friendS}-dňový streak</span></div>
-        <div class="duet-habit">${d.friend.habit}</div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px">
+        <div style="background:var(--bg3);border-radius:14px;padding:10px 14px;flex:1;text-align:center">
+          <div style="font-size:18px;margin-bottom:4px">🔥</div>
+          <div style="font-size:10px;font-weight:700;color:var(--or)">Streak súboj</div>
+          <div style="font-size:9px;color:var(--tx2);margin-top:2px">Kto má dlhší streak?</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:14px;padding:10px 14px;flex:1;text-align:center">
+          <div style="font-size:18px;margin-bottom:4px">📊</div>
+          <div style="font-size:10px;font-weight:700;color:var(--go)">Týždenné %</div>
+          <div style="font-size:9px;color:var(--tx2);margin-top:2px">Kto splní viac návykov?</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:14px;padding:10px 14px;flex:1;text-align:center">
+          <div style="font-size:18px;margin-bottom:4px">🏆</div>
+          <div style="font-size:10px;font-weight:700;color:var(--am)">Flame body</div>
+          <div style="font-size:9px;color:var(--tx2);margin-top:2px">Celkové skóre</div>
+        </div>
       </div>
-    </div>
-    <div class="duet-days">${dayHTML(d.friendDays)}</div>
-    <div class="duet-divider"></div>
-    <div class="duet-invite-btn" onclick="showInviteToast()">+ Pozvať priateľa do výzvy</div>`;
+      <div class="duet-invite-btn" onclick="showInviteToast()">+ Pozvať priateľa do výzvy</div>
+    </div>`;
 }
 
 function showInviteToast() {
