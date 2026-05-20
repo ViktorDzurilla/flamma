@@ -4604,6 +4604,12 @@ function checkCompassion() {
   if (lastDismiss && lastDismiss !== todayKey()) localStorage.removeItem('flamma_compassion_dismissed');
   if (localStorage.getItem('flamma_compassion_dismissed')) return;
   const history = loadHistory();
+  const totalDays = Object.keys(history).length;
+  if (totalDays < 3) {
+    const card = document.getElementById('compassion-card');
+    if (card) card.classList.remove('show');
+    return;
+  }
   const d = new Date();
   let missed = 0;
   for (let i = 1; i <= 10; i++) {
