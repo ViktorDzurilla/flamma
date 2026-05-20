@@ -4905,28 +4905,111 @@ function renderInsight() {
   const warn = document.getElementById('insight-warn');
   if (!wrap) return;
   wrap.innerHTML = '';
-  WEAK_DAYS.forEach(d => {
-    const hue = d.pct < 50 ? '#FF5500' : d.pct < 65 ? '#FF8C00' : '#4CAF50';
+
+  const history = loadHistory();
+  const total   = activeCount();
+  const DAY_SK  = ['Nedeľa','Pondelok','Utorok','Streda','Štvrtok','Piatok','Sobota'];
+
+  // Accumulate per weekday
+  const daySum   = [0,0,0,0,0,0,0];
+  const dayCount = [0,0,0,0,0,0,0];
+  Object.entries(history).forEach(([k, done]) => {
+    const d  = new Date(k + 'T12:00:00');
+    const wd = d.getDay();
+    daySum[wd]   += total > 0 ? done.length / total * 100 : 0;
+    dayCount[wd] += 1;
+  });
+
+  // Mon–Sun order
+  const ordered = [1,2,3,4,5,6,0].map(wd => ({
+    day:   DAY_SK[wd],
+    pct:   dayCount[wd] > 0 ? Math.round(daySum[wd] / dayCount[wd]) : null,
+  }));
+
+  const hasSome = ordered.some(d => d.pct !== null);
+  if (!hasSome) {
+    wrap.innerHTML = '<div style="color:var(--tx2);font-size:11px;padding:8px 0">Zatiaľ nedostatok dát. Plň návyky každý deň — vzorec sa zobrazí automaticky.</div>';
+    if (warn) warn.textContent = '';
+    return;
+  }
+
+  ordered.forEach(d => {
+    const pct = d.pct !== null ? d.pct : 0;
+    const hue = pct < 50 ? '#FF5500' : pct < 65 ? '#FF8C00' : '#4CAF50';
     const div = document.createElement('div');
     div.className = 'insight-item';
     div.innerHTML = `
       <div class="insight-day">${d.day}</div>
-      <div class="insight-bar-wrap"><div class="insight-bar-fill" style="width:0%;background:${hue}" data-pct="${d.pct}"></div></div>
-      <div class="insight-pct">${d.pct}%</div>`;
+      <div class="insight-bar-wrap"><div class="insight-bar-fill" style="width:0%;background:${hue}" data-pct="${pct}"></div></div>
+      <div class="insight-pct">${d.pct !== null ? pct + '%' : '—'}</div>`;
     wrap.appendChild(div);
   });
-  // Animácia
+
   setTimeout(() => {
-    wrap.querySelectorAll('.insight-bar-fill').forEach(b => { b.style.width = b.dataset.pct + '%'; b.style.transition = 'width 1s cubic-bezier(.4,0,.2,1)'; });
+    wrap.querySelectorAll('.insight-bar-fill').forEach(b => {
+      b.style.width = b.dataset.pct + '%';
+      b.style.transition = 'width 1s cubic-bezier(.4,0,.2,1)';
+    });
   }, 50);
-  const weakest = WEAK_DAYS.reduce((a,b) => a.pct < b.pct ? a : b);
+
+  const withData = ordered.filter(d => d.pct !== null);
+  const weakest  = withData.reduce((a, b) => a.pct < b.pct ? a : b);
   if (warn) warn.textContent = `⚠️ ${weakest.day} je tvoj najslabší deň (${weakest.pct}%) — v tento deň si naplánuj pripomienku.`;
 }
 
 function renderMoodCorr() {
   const wrap = document.getElementById('mood-corr-rows');
   if (!wrap) return;
-  wrap.innerHTML = MOOD_CORR.map(r => `
+
+  const moodLog = JSON.parse(localStorage.getItem('flamma_mood') || '[]');
+  const history = loadHistory();
+
+  if (moodLog.length < 3) {
+    wrap.innerHTML = '<div style="color:var(--tx2);font-size:11px;padding:8px 0">Zatiaľ nedostatok zápisov nálady. Hodnoť svoju náladu po splnení návykov — korelácia sa zobrazí automaticky.</div>';
+    return;
+  }
+
+  // Najčastejšie návyky pre danú skupinu mood zápisov
+  function topHabits(entries, n) {
+    const freq = {};
+    entries.forEach(e => {
+      (history[e.date] || []).forEach(id => { freq[id] = (freq[id] || 0) + 1; });
+    });
+    return Object.entries(freq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, n)
+      .map(([id]) => { const h = habitById(Number(id)); return h ? h.name : null; })
+      .filter(Boolean);
+  }
+
+  function avg(entries) {
+    return entries.length ? (entries.reduce((s, e) => s + e.mood, 0) / entries.length).toFixed(1) : '—';
+  }
+
+  const high = moodLog.filter(e => e.mood >= 4);
+  const mid  = moodLog.filter(e => e.mood === 3);
+  const low  = moodLog.filter(e => e.mood <= 2);
+
+  const EMOJIS = { high:'😄', mid:'😊', low:'😐' };
+  const LBLS   = {
+    high: `Výborná nálada · ${avg(high)}/5`,
+    mid:  `Dobrá nálada · ${avg(mid)}/5`,
+    low:  `Nižšia nálada · ${avg(low)}/5`,
+  };
+  const FALLBACK = {
+    high: 'Viac ako 3 návyky splnené',
+    mid:  '2–3 návyky splnené',
+    low:  'Menej ako 2 návyky splnené',
+  };
+
+  const rows = [];
+  [['high', high], ['mid', mid], ['low', low]].forEach(([key, entries]) => {
+    if (!entries.length) return;
+    const habits = topHabits(entries, 3);
+    rows.push({ emoji: EMOJIS[key], lbl: LBLS[key], habits: habits.length ? habits.join(' + ') : FALLBACK[key] });
+  });
+
+  wrap.innerHTML = rows.map(r => `
     <div class="mood-corr-row">
       <div class="mood-corr-emoji">${r.emoji}</div>
       <div style="flex:1">
