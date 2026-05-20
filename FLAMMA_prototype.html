@@ -3529,15 +3529,56 @@ function switchTab(el, key) {
 ───────────────────────────── */
 function renderWeekBars() {
   const wrap = document.getElementById('wbars');
-  WEEKS.forEach(w => {
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  const history = loadHistory();
+  const total   = activeCount();
+  const now     = new Date();
+
+  // Monday of current week
+  const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // Mon=0 … Sun=6
+  const thisMonday = new Date(now);
+  thisMonday.setDate(now.getDate() - dayOfWeek);
+  thisMonday.setHours(0,0,0,0);
+
+  function dateKey(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function weekPct(weekOffset) {
+    // weekOffset 0 = this week, 1 = last week, …
+    const mon = new Date(thisMonday);
+    mon.setDate(thisMonday.getDate() - weekOffset * 7);
+    let sum = 0, count = 0;
+    for (let d = 0; d < 7; d++) {
+      const day = new Date(mon);
+      day.setDate(mon.getDate() + d);
+      if (day > now) break; // skip future days
+      const k = dateKey(day);
+      // Only count days that exist in history (user was active) OR count 0 for past days
+      const done = (history[k] || []).length;
+      sum   += total > 0 ? done / total * 100 : 0;
+      count += 1;
+    }
+    return count > 0 ? Math.round(sum / count) : null;
+  }
+
+  const COLORS = ['#FF4400','#FF6600','#FF8800','#FFAA00','#FFBB00','#FFD700'];
+  const LABELS = ['Tento týždeň','Minulý týž.','Pred 2 týž.','Pred 3 týž.','Pred 4 týž.','Pred 5 týž.'];
+
+  LABELS.forEach((lbl, i) => {
+    const pct = weekPct(i);
+    if (pct === null) return; // skip fully-future weeks (shouldn't happen)
+    const c   = COLORS[i];
     const row = document.createElement('div');
     row.className = 'wbar';
     row.innerHTML = `
-      <div class="wbar-lbl">${w.lbl}</div>
+      <div class="wbar-lbl">${lbl}</div>
       <div class="wbar-track">
-        <div class="wbar-fill" style="width:${w.pct}%;background:linear-gradient(90deg,${w.c},${w.c}88)">${w.pct}%</div>
+        <div class="wbar-fill" style="width:${pct}%;background:linear-gradient(90deg,${c},${c}88)">${pct}%</div>
       </div>
-      <div class="wbar-pct">${w.pct}%</div>
+      <div class="wbar-pct">${pct}%</div>
     `;
     wrap.appendChild(row);
   });
