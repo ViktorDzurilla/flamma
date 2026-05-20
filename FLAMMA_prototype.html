@@ -3305,7 +3305,16 @@ function goToSection(index) {
     }
   });
 
+  // Resize slider to current panel height so no dead space below
+  syncSliderHeight(index);
   document.getElementById('s-kindle').scrollTop = 0;
+}
+
+function syncSliderHeight(index) {
+  const slider = document.querySelector('.sections-slider');
+  const panels = document.querySelectorAll('.sec-panel');
+  if (!slider || !panels[index]) return;
+  slider.style.height = panels[index].offsetHeight + 'px';
 }
 
 function renderSections() {
@@ -3436,6 +3445,9 @@ function renderSections() {
   }, { passive: true });
 
   wrap.appendChild(sliderWrap);
+
+  // Sync slider height to first panel after render
+  requestAnimationFrame(() => syncSliderHeight(currentSection || 0));
 
   // "+ Pridať návyk" — centered below all sections
   const addBtn = document.createElement('div');
