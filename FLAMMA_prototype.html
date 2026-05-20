@@ -1114,8 +1114,6 @@
 
     /* ── SMART SORT + ADD HABIT ── */
     .kindle-sort-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 20px 6px; gap: 6px; }
-    .sort-chip { font-size: 9px; font-weight: 700; color: var(--tx3); background: var(--bg2); border-radius: 8px; padding: 4px 10px; cursor: pointer; border: 1px solid transparent; transition: all .18s; }
-    .sort-chip.active { color: var(--or); border-color: rgba(255,85,0,.3); background: rgba(255,85,0,.07); }
     .add-habit-btn {
       display: flex; align-items: center; gap: 5px;
       font-size: 9px; font-weight: 700; color: var(--or);
@@ -1830,7 +1828,6 @@
     </div>
 
     <div class="kindle-sort-row">
-      <div class="sort-chip" id="sort-chip" onclick="toggleSmartSort()">⚡ Zoradiť podľa priority</div>
       <div class="add-habit-btn" onclick="openAddHabit()">＋ Pridať návyk</div>
     </div>
     <div class="compassion-card" id="compassion-card">
@@ -3344,14 +3341,7 @@ function renderSections() {
     `;
     panel.appendChild(hdr);
 
-    // Smart sort: nesplnené hore
-    const sortedIds = smartSortOn
-      ? [...g.ids].sort((a,b) => {
-          const ad = (habitById(a) || {}).done ? 1 : 0;
-          const bd = (habitById(b) || {}).done ? 1 : 0;
-          return ad - bd;
-        })
-      : g.ids;
+    const sortedIds = g.ids;
 
     // Habit cards — preskočíme neaktívne (deselektované v onboardingu)
     sortedIds.forEach(i => {
@@ -5237,13 +5227,7 @@ function toggleDeepDive(el) {
 /* ─────────────────────────────
    SMART SORT
 ───────────────────────────── */
-function toggleSmartSort() {
-  smartSortOn = !smartSortOn;
-  const chip = document.getElementById('sort-chip');
-  if (chip) chip.classList.toggle('active', smartSortOn);
-  const wrap = document.getElementById('sections-wrap');
-  if (wrap) { wrap.innerHTML = ''; renderSections(); }
-}
+function toggleSmartSort() {}
 
 /* ─────────────────────────────
    NAV PILL
