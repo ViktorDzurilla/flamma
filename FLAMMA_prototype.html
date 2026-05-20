@@ -1225,6 +1225,44 @@
     }
     .cf-submit:active { opacity: .82; }
 
+    /* ── DAY PICKER (inside add-sheet-body) ── */
+    .dp-wrap { display: flex; flex-direction: column; gap: 14px; padding-bottom: 16px; }
+    .dp-habit-preview { display: flex; align-items: center; gap: 10px; background: var(--bg3); border-radius: 14px; padding: 11px 14px; border: 1px solid rgba(255,255,255,.07); }
+    .dp-habit-icon { font-size: 24px; }
+    .dp-habit-name { font-size: 14px; font-weight: 700; }
+    .dp-question { font-size: 13px; font-weight: 600; color: var(--tx2); margin-top: 4px; }
+    .dp-all-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 0; border-radius: 14px;
+      font-size: 13px; font-weight: 800; cursor: pointer; transition: all .18s;
+      background: var(--bg3); color: var(--tx2);
+      border: 2px solid rgba(255,255,255,.08);
+    }
+    .dp-all-btn.active { background: rgba(255,85,0,.12); color: var(--or); border-color: rgba(255,85,0,.35); }
+    .dp-all-btn:active { transform: scale(.97); }
+    .dp-or { text-align: center; font-size: 10px; font-weight: 700; color: var(--tx3); letter-spacing: 1px; text-transform: uppercase; }
+    .dp-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; }
+    .dp-day {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border-radius: 10px; font-size: 10px; font-weight: 800;
+      background: var(--bg3); color: var(--tx3); cursor: pointer;
+      border: 2px solid transparent; transition: all .18s;
+    }
+    .dp-day.sel { background: rgba(255,85,0,.15); color: var(--or); border-color: rgba(255,85,0,.4); }
+    .dp-day:active { transform: scale(.88); }
+    .dp-confirm {
+      padding: 14px; background: linear-gradient(135deg, var(--or), var(--am));
+      border-radius: 16px; text-align: center; font-size: 14px; font-weight: 800;
+      cursor: pointer; transition: opacity .18s; margin-top: 4px;
+    }
+    .dp-confirm:active { opacity: .82; }
+    .dp-confirm.disabled { opacity: .35; pointer-events: none; }
+    .dp-back { text-align: center; font-size: 12px; font-weight: 700; color: var(--tx3); cursor: pointer; padding: 4px 0 0; }
+    .dp-back:active { color: var(--tx2); }
+
+    /* Days badge on habit card */
+    .hc-days { font-size: 9px; font-weight: 700; color: var(--tx3); letter-spacing: .5px; margin-top: 2px; }
+
     /* Custom habits management (in profil) */
     .custom-habit-row { display: flex; align-items: center; gap: 10px; background: var(--bg2); border-radius: 12px; padding: 10px 12px; margin-bottom: 7px; border: 1px solid rgba(255,255,255,.05); }
     .custom-habit-ico { font-size: 20px; width: 30px; text-align: center; }
@@ -2797,7 +2835,8 @@ function loadCustomHabits() {
         HABITS.push({
           id: ch.id, name: ch.name, icon: ch.icon,
           streak: 0, done: false, why: ch.why || '',
-          facts: [], active: true, custom: true
+          facts: [], active: true, custom: true,
+          days: ch.days || [0,1,2,3,4,5,6]
         });
       }
       // Pridaj do správnej skupiny
@@ -2840,22 +2879,27 @@ function addCustomHabitFromForm() {
   const why     = whyEl  ? whyEl.value.trim() : '';
   if (!name) { nameEl && (nameEl.style.borderColor = 'rgba(255,80,80,.6)'); return; }
 
-  const id = nextCustomId++;
-  const ch = { id, name, icon, group: cfGroupSel, why };
-  customHabits.push(ch);
-  saveCustomHabits();
+  // Zobraz výber dní pred pridaním (cfGroupSel sa zachová)
+  const groupForHabit = cfGroupSel;
+  showDayPicker(name, icon, (days) => {
+    const id = nextCustomId++;
+    const ch = { id, name, icon, group: groupForHabit, why, days };
+    customHabits.push(ch);
+    saveCustomHabits();
 
-  HABITS.push({ id, name, icon, streak:0, done:false, why, facts:[], active:true, custom:true });
-  const g = GROUPS.find(g => g.name === cfGroupSel);
-  if (g) g.ids.push(id);
+    HABITS.push({ id, name, icon, streak:0, done:false, why, facts:[], active:true, custom:true, days });
+    const g = GROUPS.find(g => g.name === groupForHabit);
+    if (g) g.ids.push(id);
 
-  // Re-render
-  const wrap = document.getElementById('sections-wrap');
-  if (wrap) { wrap.innerHTML = ''; renderSections(); }
-  updateAll();
-  renderCustomHabitsInProfil();
-  closeAddHabit();
-  showToast(`✅ Návyk „${name}" pridaný!`);
+    // Re-render
+    const wrap = document.getElementById('sections-wrap');
+    if (wrap) { wrap.innerHTML = ''; renderSections(); }
+    updateAll();
+    renderCustomHabitsInProfil();
+    closeAddHabit();
+    const daysLabel = days.length >= 7 ? 'každý deň' : formatDaysShort(days);
+    showToast(`✅ Návyk „${name}" pridaný! (${daysLabel})`);
+  });
 }
 
 function addFromLibrary(libIdx) {
@@ -2865,24 +2909,118 @@ function addFromLibrary(libIdx) {
   if (HABITS.find(h => h.name === item.name)) {
     showToast('Tento návyk už máš! 👍'); return;
   }
-  const id = nextCustomId++;
-  const ch = { id, name: item.name, icon: item.icon, group: item.group, why: item.why };
-  customHabits.push(ch);
-  saveCustomHabits();
+  // Zobraz výber dní pred pridaním
+  showDayPicker(item.name, item.icon, (days) => {
+    const id = nextCustomId++;
+    const ch = { id, name: item.name, icon: item.icon, group: item.group, why: item.why, days };
+    customHabits.push(ch);
+    saveCustomHabits();
 
-  HABITS.push({ id, name: item.name, icon: item.icon, streak:0, done:false, why: item.why, facts:[], active:true, custom:true });
-  const g = GROUPS.find(g => g.name === item.group);
-  if (g) g.ids.push(id);
+    HABITS.push({ id, name: item.name, icon: item.icon, streak:0, done:false, why: item.why, facts:[], active:true, custom:true, days });
+    const g = GROUPS.find(g => g.name === item.group);
+    if (g) g.ids.push(id);
 
-  const wrap = document.getElementById('sections-wrap');
-  if (wrap) { wrap.innerHTML = ''; renderSections(); }
-  updateAll();
-  renderCustomHabitsInProfil();
+    const wrap = document.getElementById('sections-wrap');
+    if (wrap) { wrap.innerHTML = ''; renderSections(); }
+    updateAll();
+    renderCustomHabitsInProfil();
+    closeAddHabit();
 
-  // Vizuálna odozva v modalei
-  const btn = document.querySelector(`.lib-item[data-idx="${libIdx}"]`);
-  if (btn) { btn.classList.add('added'); btn.querySelector('.lib-item-add').textContent = '✓'; }
-  showToast(`✅ „${item.name}" pridaný!`);
+    const daysLabel = days.length >= 7 ? 'každý deň' : formatDaysShort(days);
+    showToast(`✅ „${item.name}" pridaný! (${daysLabel})`);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   DAY PICKER — krok po výbere návyku
+═══════════════════════════════════════════ */
+let dayPickerCallback = null;
+let dayPickerAllMode  = true;
+let dayPickerSel      = [0,1,2,3,4,5,6];
+
+function showDayPicker(habitName, habitIcon, onConfirm) {
+  dayPickerCallback = onConfirm;
+  dayPickerAllMode  = true;
+  dayPickerSel      = [0,1,2,3,4,5,6];
+  // Swap out header title and hide tabs
+  document.querySelector('.add-sheet-title').textContent = '📅 Kedy?';
+  document.querySelector('.add-tabs').style.visibility = 'hidden';
+  document.querySelector('.add-tabs').style.height = '0';
+  document.querySelector('.add-tabs').style.padding = '0';
+  document.querySelector('.add-tabs').style.overflow = 'hidden';
+  renderDayPickerBody(habitName, habitIcon);
+}
+
+function renderDayPickerBody(habitName, habitIcon) {
+  const body = document.getElementById('add-sheet-body');
+  // Store habit info for re-renders
+  if (habitName !== undefined) body.dataset.dpName = habitName;
+  if (habitIcon !== undefined) body.dataset.dpIcon = habitIcon;
+  const name = body.dataset.dpName || '';
+  const icon = body.dataset.dpIcon || '⭐';
+
+  const dayLabels = ['Po','Ut','St','Št','Pi','So','Ne'];
+  const dayValues = [1,2,3,4,5,6,0];
+
+  const daysHtml = dayValues.map((dv, i) => {
+    const isSel = !dayPickerAllMode && dayPickerSel.includes(dv);
+    return `<div class="dp-day${isSel ? ' sel' : ''}" onclick="dpToggleDay(${dv})">${dayLabels[i]}</div>`;
+  }).join('');
+
+  const noSel = !dayPickerAllMode && dayPickerSel.length === 0;
+
+  body.innerHTML = `
+    <div class="dp-wrap">
+      <div class="dp-habit-preview">
+        <div class="dp-habit-icon">${icon}</div>
+        <div class="dp-habit-name">${name}</div>
+      </div>
+      <div class="dp-question">Kedy chceš tento návyk plniť?</div>
+      <div class="dp-all-btn${dayPickerAllMode ? ' active' : ''}" onclick="dpToggleAll()">📆 &nbsp;Každý deň</div>
+      <div class="dp-or">— alebo vyber konkrétne dni —</div>
+      <div class="dp-days">${daysHtml}</div>
+      <div class="dp-confirm${noSel ? ' disabled' : ''}" onclick="dpConfirm()">Potvrdiť ✓</div>
+      <div class="dp-back" onclick="dpBack()">← Späť na výber návyku</div>
+    </div>
+  `;
+}
+
+function dpToggleAll() {
+  dayPickerAllMode = true;
+  dayPickerSel = [0,1,2,3,4,5,6];
+  renderDayPickerBody();
+}
+
+function dpToggleDay(dv) {
+  dayPickerAllMode = false;
+  const idx = dayPickerSel.indexOf(dv);
+  if (idx === -1) dayPickerSel.push(dv);
+  else dayPickerSel.splice(idx, 1);
+  renderDayPickerBody();
+}
+
+function dpConfirm() {
+  if (!dayPickerAllMode && dayPickerSel.length === 0) return;
+  const days = dayPickerAllMode ? [0,1,2,3,4,5,6] : [...dayPickerSel];
+  const cb = dayPickerCallback;
+  dayPickerCallback = null;
+  dpRestoreAddSheet();
+  if (cb) cb(days);
+}
+
+function dpBack() {
+  dayPickerCallback = null;
+  dpRestoreAddSheet();
+  renderAddSheetBody();
+}
+
+function dpRestoreAddSheet() {
+  document.querySelector('.add-sheet-title').textContent = 'Pridať návyk';
+  const tabs = document.querySelector('.add-tabs');
+  tabs.style.visibility = '';
+  tabs.style.height = '';
+  tabs.style.padding = '';
+  tabs.style.overflow = '';
 }
 
 /* ═══════════════════════════════════════════
@@ -2893,6 +3031,7 @@ function openAddHabit() {
   libCatActive = 'Všetky';
   cfGroupSel   = 'Ráno';
   document.getElementById('add-overlay').classList.add('show');
+  dpRestoreAddSheet(); // ensure clean state
   renderAddSheetBody();
 }
 
@@ -3006,7 +3145,46 @@ function renderCustomHabitsInProfil() {
 }
 
 const score       = () => HABITS.filter(h => h.done).length;
-const activeCount = () => HABITS.filter(h => h.active !== false).length;
+
+/* Day-of-week helper for the currently displayed date */
+function getDisplayDow() {
+  const d = new Date();
+  d.setDate(d.getDate() + currentDayOffset);
+  return d.getDay(); // 0=Sun, 1=Mon, …, 6=Sat
+}
+
+/* Returns true if habit h is scheduled for given day-of-week (0=Sun…6=Sat).
+   If h.days is absent or full week, always returns true. */
+function isScheduledForDay(h, dow) {
+  if (!h.days || h.days.length === 0 || h.days.length >= 7) return true;
+  return h.days.includes(dow);
+}
+
+/* Formats a days array to a compact Slovak string, e.g. "Po – Pi" or "Po · Ut · Š" */
+function formatDaysShort(days) {
+  if (!days || days.length >= 7) return '';
+  const labels = ['Ne','Po','Ut','St','Št','Pi','So'];
+  const order  = [1,2,3,4,5,6,0]; // Mon-first display order
+  const sorted = order.filter(d => days.includes(d));
+  // Detect contiguous range
+  const idx = sorted.map(d => order.indexOf(d));
+  let isRange = idx.length > 2;
+  if (isRange) {
+    for (let i = 1; i < idx.length; i++) {
+      if (idx[i] !== idx[i-1] + 1) { isRange = false; break; }
+    }
+  }
+  if (isRange && sorted.length > 2) {
+    return labels[sorted[0]] + ' – ' + labels[sorted[sorted.length-1]];
+  }
+  return sorted.map(d => labels[d]).join(' · ');
+}
+
+const activeCount = () => {
+  const dow = getDisplayDow();
+  return HABITS.filter(h => h.active !== false && isScheduledForDay(h, dow)).length;
+};
+
 /* Helper — funguje pre pôvodné (id=index) aj vlastné (id≥100) návyky */
 const habitById   = id => HABITS.find(h => h.id === id) || null;
 
@@ -3106,8 +3284,9 @@ function updateAll() {
   animateNum(document.getElementById('home-pts'), pts, 500);
   document.getElementById('profil-pts').textContent = pts + ' Flame bodov celkovo';
 
-  // Home streak — max streak spomedzi aktívnych návykov
-  const activeHabits = HABITS.filter(h => h.active !== false);
+  // Home streak — max streak spomedzi aktívnych návykov (scheduled today)
+  const displayDow2 = getDisplayDow();
+  const activeHabits = HABITS.filter(h => h.active !== false && isScheduledForDay(h, displayDow2));
   const maxStreak = activeHabits.length > 0 ? Math.max(...activeHabits.map(h => h.streak)) : 0;
   const homeStreakEl = document.getElementById('home-streak');
   if (homeStreakEl) homeStreakEl.textContent = maxStreak;
@@ -3173,9 +3352,9 @@ function updateAll() {
   }
   if (statsPts) statsPts.textContent = pts;
 
-  // Time-of-day fracs — rátame len aktívne návyky
+  // Time-of-day fracs — rátame len aktívne návyky naplánované dnes
   GROUPS.forEach((g, gi) => {
-    const activeIds = g.ids.filter(i => { const hh = habitById(i); return hh && hh.active !== false; });
+    const activeIds = g.ids.filter(i => { const hh = habitById(i); return hh && hh.active !== false && isScheduledForDay(hh, displayDow2); });
     const done      = activeIds.filter(i => { const hh = habitById(i); return hh && hh.done; }).length;
     const ids       = ['tod-morning','tod-day','tod-evening'];
     if (document.getElementById(ids[gi])) document.getElementById(ids[gi]).textContent = `${done}/${activeIds.length}`;
@@ -3185,9 +3364,9 @@ function updateAll() {
   document.getElementById('gbar').style.width = pct + '%';
   document.getElementById('gbar-lbl').textContent = `${s} z ${total} splnených`;
 
-  // Sections fracs — len aktívne
+  // Sections fracs — len aktívne + naplánované dnes
   GROUPS.forEach(g => {
-    const activeIds = g.ids.filter(i => { const hh = habitById(i); return hh && hh.active !== false; });
+    const activeIds = g.ids.filter(i => { const hh = habitById(i); return hh && hh.active !== false && isScheduledForDay(hh, displayDow2); });
     const done      = activeIds.filter(i => { const hh = habitById(i); return hh && hh.done; }).length;
     const el        = document.getElementById(`sfrac-${g.name}`);
     if (el) el.textContent = `${done}/${activeIds.length}`;
@@ -3354,10 +3533,12 @@ function renderSections() {
 
     const sortedIds = g.ids;
 
-    // Habit cards — preskočíme neaktívne (deselektované v onboardingu)
+    // Habit cards — preskočíme neaktívne (deselektované v onboardingu) + nenaplánované na dnešný deň
+    const displayDow = getDisplayDow();
     sortedIds.forEach(i => {
       const h = habitById(i);
       if (!h || h.active === false) return;
+      if (!isScheduledForDay(h, displayDow)) return; // not scheduled today
       const card = document.createElement('div');
       card.id = `hcard-${i}`;
       card.className = 'hc' + (h.done ? ' done' : '');
@@ -3366,12 +3547,14 @@ function renderSections() {
         ? `🔥 ${h.streak}-dňový streak`
         : `🌱 Začni dnes!`;
       const schedTime = habitSchedule[i] ? `<div class="hc-time" id="hc-time-${i}">⏰ ${habitSchedule[i]}</div>` : `<div class="hc-time" id="hc-time-${i}"></div>`;
+      const daysBadge = (h.days && h.days.length < 7)
+        ? `<div class="hc-days">📅 ${formatDaysShort(h.days)}</div>` : '';
       card.innerHTML = `
         <div class="hc-ico">${h.icon}</div>
         <div class="hc-info">
           <div class="hc-name">${h.name}</div>
           <div class="hc-streak">${streakTxt}</div>
-          ${schedTime}
+          ${schedTime}${daysBadge}
         </div>
         ${makeSVGRing(i, h.done)}
       `;
