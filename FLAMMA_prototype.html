@@ -2992,10 +2992,16 @@ function dpToggleAll() {
 }
 
 function dpToggleDay(dv) {
-  dayPickerAllMode = false;
-  const idx = dayPickerSel.indexOf(dv);
-  if (idx === -1) dayPickerSel.push(dv);
-  else dayPickerSel.splice(idx, 1);
+  if (dayPickerAllMode) {
+    // Prvé kliknutie — prepni do konkrétneho módu, začni prázdne + pridaj tento deň
+    dayPickerAllMode = false;
+    dayPickerSel = [dv];
+  } else {
+    // Prepínaj jednotlivé dni
+    const idx = dayPickerSel.indexOf(dv);
+    if (idx === -1) dayPickerSel.push(dv);
+    else dayPickerSel.splice(idx, 1);
+  }
   renderDayPickerBody();
 }
 
