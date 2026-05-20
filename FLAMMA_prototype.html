@@ -629,6 +629,49 @@
     }
 
     /* ── ONBOARDING ── */
+    /* ── LOGIN OVERLAY ── */
+    .login-overlay {
+      position: absolute; inset: 0; background: var(--bg); z-index: 1100;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px 28px 50px;
+    }
+    .login-overlay.hidden { display: none; }
+    .login-logo { font-size: 44px; font-weight: 900; letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--or), var(--go));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 6px; }
+    .login-tagline { font-size: 12px; color: var(--tx2); margin-bottom: 48px; letter-spacing: .5px; }
+    .login-title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+    .login-sub   { font-size: 12px; color: var(--tx2); text-align: center; margin-bottom: 32px; line-height: 1.6; }
+    .login-avatar-row { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
+    .login-av-btn {
+      width: 48px; height: 48px; border-radius: 14px; background: var(--bg2);
+      border: 2px solid transparent; font-size: 24px; display: flex;
+      align-items: center; justify-content: center; cursor: pointer; transition: all .2s;
+    }
+    .login-av-btn.selected { border-color: var(--or); background: rgba(255,85,0,.12); transform: scale(1.12); }
+    .login-name-wrap { width: 100%; margin-bottom: 20px; }
+    .login-name-input {
+      width: 100%; padding: 16px 18px; border-radius: 16px;
+      background: var(--bg2); border: 1.5px solid rgba(255,255,255,.08);
+      color: var(--tx); font-size: 16px; font-weight: 600; outline: none;
+      font-family: inherit; box-sizing: border-box; transition: border-color .2s;
+    }
+    .login-name-input:focus { border-color: var(--or); }
+    .login-name-input::placeholder { color: var(--tx3); font-weight: 400; }
+    .login-btn {
+      width: 100%; padding: 17px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--or), #FF8C00);
+      color: #fff; font-size: 15px; font-weight: 800; cursor: pointer;
+      border: none; font-family: inherit; letter-spacing: .3px;
+      box-shadow: 0 6px 24px rgba(255,85,0,.3); transition: opacity .2s;
+    }
+    .login-btn:active { opacity: .85; }
+    .login-btn:disabled { opacity: .4; cursor: default; }
+    .login-home-greeting {
+      font-size: 11px; color: var(--tx2); font-weight: 600; letter-spacing: .3px;
+    }
+
     .onboard-overlay {
       position: absolute; inset: 0; background: var(--bg); z-index: 1000;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1636,7 +1679,10 @@
   <!-- ══ HOME ══ -->
   <div class="screen active" id="s-home">
     <div class="home-top">
-      <div class="logo">FLAMMA</div>
+      <div>
+        <div class="logo">FLAMMA</div>
+        <div class="login-home-greeting" id="home-greeting"></div>
+      </div>
       <div class="settings-btn">⚙️</div>
     </div>
 
@@ -1906,12 +1952,17 @@
   <!-- ══ PROFIL ══ -->
   <div class="screen" id="s-profil">
     <div class="profil-hdr">
-      <div class="profil-av">🔥</div>
+      <div class="profil-av" id="profil-av">🔥</div>
       <div>
-        <div class="profil-nm">Môj profil</div>
+        <div class="profil-nm" id="profil-nm">Môj profil</div>
         <div class="profil-lvl" id="profil-lvl">Iskra · Úroveň 1</div>
         <div class="profil-pts" id="profil-pts">0 Flame bodov celkovo</div>
       </div>
+    </div>
+    <div onclick="openChangeProfile()" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border-radius:12px;margin-bottom:16px;cursor:pointer;border:1px solid rgba(255,255,255,.05)">
+      <span style="font-size:16px">✏️</span>
+      <span style="font-size:12px;color:var(--tx2);flex:1">Zmeniť meno alebo avatar</span>
+      <span style="font-size:14px;color:var(--tx3)">›</span>
     </div>
 
     <!-- Level progress -->
@@ -1995,6 +2046,30 @@
     </div>
   </div>
 
+
+  <!-- ══ LOGIN ══ -->
+  <div class="login-overlay hidden" id="login-overlay">
+    <div class="login-logo">FLAMMA</div>
+    <div class="login-tagline">Buduj návyky. Zmeň seba.</div>
+    <div class="login-title">Vitaj! Ako sa voláš?</div>
+    <div class="login-sub">Tvoje meno nám pomôže personalizovať<br>aplikáciu práve pre teba.</div>
+    <div class="login-avatar-row" id="login-av-row">
+      <div class="login-av-btn selected" data-av="🔥" onclick="selectAvatar(this)">🔥</div>
+      <div class="login-av-btn" data-av="⚡" onclick="selectAvatar(this)">⚡</div>
+      <div class="login-av-btn" data-av="🌟" onclick="selectAvatar(this)">🌟</div>
+      <div class="login-av-btn" data-av="💎" onclick="selectAvatar(this)">💎</div>
+      <div class="login-av-btn" data-av="🦁" onclick="selectAvatar(this)">🦁</div>
+      <div class="login-av-btn" data-av="🐺" onclick="selectAvatar(this)">🐺</div>
+      <div class="login-av-btn" data-av="🦅" onclick="selectAvatar(this)">🦅</div>
+      <div class="login-av-btn" data-av="🧠" onclick="selectAvatar(this)">🧠</div>
+    </div>
+    <div class="login-name-wrap">
+      <input class="login-name-input" id="login-name-input" type="text"
+        placeholder="Tvoje meno alebo prezývka…" maxlength="24"
+        oninput="onLoginNameInput()" onkeydown="if(event.key==='Enter')loginSubmit()"/>
+    </div>
+    <button class="login-btn" id="login-btn" disabled onclick="loginSubmit()">Začať →</button>
+  </div>
 
   <!-- ══ ONBOARDING ══ -->
   <div class="onboard-overlay hidden" id="onboard-overlay">
@@ -3831,6 +3906,85 @@ const ONBOARD_SLIDES = [
 ];
 let onboardStep = 0;
 
+/* ═══════════════════════════════════════════
+   LOGIN & USER PROFILE
+═══════════════════════════════════════════ */
+let selectedAvatar = '🔥';
+
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('flamma_user')) || null; }
+  catch { return null; }
+}
+
+function saveUser(user) {
+  localStorage.setItem('flamma_user', JSON.stringify(user));
+}
+
+function selectAvatar(el) {
+  document.querySelectorAll('.login-av-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAvatar = el.dataset.av;
+}
+
+function onLoginNameInput() {
+  const val = document.getElementById('login-name-input').value.trim();
+  document.getElementById('login-btn').disabled = val.length < 2;
+}
+
+function loginSubmit() {
+  const name = document.getElementById('login-name-input').value.trim();
+  if (name.length < 2) return;
+  const user = { name, avatar: selectedAvatar, since: new Date().toISOString().slice(0,10) };
+  saveUser(user);
+  document.getElementById('login-overlay').classList.add('hidden');
+  applyUserProfile();
+  showOnboarding();
+}
+
+function applyUserProfile() {
+  const user = getUser();
+  if (!user) return;
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Dobré ráno' : h < 18 ? 'Dobrý deň' : 'Dobrý večer';
+
+  // Home greeting
+  const greetEl = document.getElementById('home-greeting');
+  if (greetEl) greetEl.textContent = `${greet}, ${user.name} 👋`;
+
+  // Profile screen
+  const avEl = document.getElementById('profil-av');
+  const nmEl = document.getElementById('profil-nm');
+  if (avEl) avEl.textContent = user.avatar;
+  if (nmEl) nmEl.textContent = user.name;
+}
+
+function openChangeProfile() {
+  // Pre-fill login overlay with current values and show it
+  const user = getUser();
+  if (user) {
+    document.getElementById('login-name-input').value = user.name;
+    document.getElementById('login-btn').disabled = false;
+    // Select current avatar
+    document.querySelectorAll('.login-av-btn').forEach(b => {
+      b.classList.toggle('selected', b.dataset.av === user.avatar);
+    });
+    selectedAvatar = user.avatar;
+    // Change title for edit mode
+    document.querySelector('.login-title').textContent = 'Upraviť profil';
+    document.getElementById('login-btn').textContent = 'Uložiť →';
+  }
+  document.getElementById('login-overlay').classList.remove('hidden');
+}
+
+function showLogin() {
+  if (getUser()) {
+    applyUserProfile();
+    showOnboarding();
+    return;
+  }
+  document.getElementById('login-overlay').classList.remove('hidden');
+}
+
 function showOnboarding() {
   if (localStorage.getItem('flamma_onboarded')) return;
   document.getElementById('onboard-overlay').classList.remove('hidden');
@@ -4220,7 +4374,8 @@ function applyHabitSelection() {
 function resetAllData() {
   if (!confirm('Naozaj chceš vymazať všetky dáta FLAMMA? História, streaky aj vlastné návyky budú odstránené.')) return;
   ['flamma_history','flamma_custom_habits','flamma_selected_habits',
-   'flamma_onboarded','flamma_freezes','flamma_streak_checked'].forEach(k => localStorage.removeItem(k));
+   'flamma_onboarded','flamma_freezes','flamma_streak_checked','flamma_user',
+   'flamma_mood','flamma_compassion_dismissed'].forEach(k => localStorage.removeItem(k));
   location.reload();
 }
 
@@ -5580,7 +5735,7 @@ function init() {
   renderCustomHabitsInProfil();
   loadNotifSettings();
   startNotifScheduler();
-  showOnboarding();
+  showLogin();
   checkStreakRecovery();
 }
 
