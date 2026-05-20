@@ -836,13 +836,13 @@
        KINDLE STEP NAVIGATOR
     ══════════════════════════════ */
     .sec-steps {
-      display: flex; align-items: center; justify-content: center;
-      gap: 0; padding: 4px 20px 14px;
+      display: flex; align-items: center;
+      gap: 0; padding: 6px 12px 14px;
     }
     .sec-step {
-      display: flex; align-items: center; gap: 5px;
-      padding: 6px 14px; border-radius: 20px;
-      font-size: 11px; font-weight: 700;
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 8px; border-radius: 14px;
+      font-size: 13px; font-weight: 700;
       cursor: pointer; transition: all .25s;
       opacity: 0.38; color: var(--tx);
     }
@@ -852,7 +852,7 @@
     }
     .sec-step.done { opacity: 0.65; }
     .sec-connector {
-      width: 22px; height: 2px;
+      width: 12px; height: 2px;
       background: var(--bg3); border-radius: 2px; flex-shrink: 0;
       transition: background .35s;
     }
@@ -3342,18 +3342,6 @@ function renderSections() {
     const panel = document.createElement('div');
     panel.className = 'sec-panel';
 
-    // Section header
-    const doneCnt = g.ids.filter(i => { const hh = habitById(i); return hh && hh.done; }).length;
-    const hdr = document.createElement('div');
-    hdr.className = 'tsec-hdr';
-    hdr.innerHTML = `
-      <div class="tsec-left">
-        <div class="tsec-dot" style="background:${g.color}"></div>
-        <div class="tsec-name" style="color:${g.color}">${g.icon} ${g.name}</div>
-      </div>
-      <div class="tsec-frac" id="sfrac-${g.name}">${doneCnt}/${g.ids.length}</div>
-    `;
-    panel.appendChild(hdr);
 
     const sortedIds = g.ids;
 
