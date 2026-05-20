@@ -943,18 +943,44 @@
     .breath-hdr {
       padding: 16px 20px 0;
       display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
     }
     .breath-back-btn { font-size: 13px; color: var(--tx2); cursor: pointer; padding: 6px 0; }
     .breath-hdr-title { font-size: 15px; font-weight: 800; }
-    .breath-type-row { display: flex; gap: 8px; padding: 14px 20px 0; }
-    .breath-type-btn {
-      flex: 1; background: var(--bg2); border-radius: 14px;
-      padding: 10px 8px; text-align: center; cursor: pointer;
-      border: 1.5px solid transparent; transition: all .2s;
+
+    /* View A — výber typu */
+    .breath-select-view {
+      flex: 1; display: flex; flex-direction: column;
+      padding: 18px 20px 20px; overflow: hidden;
     }
-    .breath-type-btn.sel { border-color: rgba(255,140,0,.55); background: rgba(255,85,0,.09); }
-    .btype-nm { font-size: 10px; font-weight: 800; }
-    .btype-ds { font-size: 8px; color: var(--tx2); margin-top: 2px; line-height: 1.35; }
+    .breath-select-list {
+      flex: 1; display: flex; flex-direction: column; gap: 12px;
+    }
+    .breath-type-btn {
+      flex: 1; background: var(--bg2); border-radius: 20px;
+      padding: 0 22px; cursor: pointer;
+      border: 2px solid rgba(255,255,255,.06);
+      transition: all .22s cubic-bezier(.4,0,.2,1);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .breath-type-btn:active { transform: scale(.97); }
+    .breath-type-btn.sel {
+      border-color: rgba(255,140,0,.5);
+      background: rgba(255,85,0,.09);
+      box-shadow: 0 0 0 1px rgba(255,140,0,.3), 0 6px 24px rgba(255,85,0,.18);
+    }
+    .btype-ico { font-size: 32px; flex-shrink: 0; }
+    .btype-info { flex: 1; }
+    .btype-nm { font-size: 16px; font-weight: 800; }
+    .btype-pat { font-size: 12px; color: var(--am); font-weight: 700; margin-top: 2px; }
+    .btype-ds { font-size: 11px; color: var(--tx2); margin-top: 3px; line-height: 1.4; }
+    .btype-arr { font-size: 20px; color: var(--tx3); flex-shrink: 0; }
+
+    /* View B — aktívne cvičenie */
+    .breath-active-view {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .breath-active-view.hidden { display: none; }
     .breath-visual-area {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 10px;
@@ -982,10 +1008,11 @@
       margin: 4px 20px 20px; padding: 16px; text-align: center;
       border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer;
       background: linear-gradient(135deg, var(--or), var(--am));
-      transition: all .18s;
+      box-shadow: 0 4px 20px rgba(255,85,0,.3); border-radius: 20px;
+      transition: all .18s; flex-shrink: 0;
     }
     .breath-ctrl-btn:active { opacity: .82; transform: scale(.97); }
-    .breath-ctrl-btn.paused { background: var(--bg3); color: var(--tx2); }
+    .breath-ctrl-btn.paused { background: var(--bg3); color: var(--tx2); box-shadow: none; }
 
     .mb-prio-nm { flex: 1; }
     .mb-prio-done { font-size: 11px; color: var(--go); font-weight: 700; }
@@ -1488,15 +1515,8 @@
     }
 
     /* ══════════════════════════════
-       BREATHING EXERCISE — IMPROVED
+       BREATHING EXERCISE — styles merged above
     ══════════════════════════════ */
-    .breath-ctrl-btn {
-      box-shadow: 0 4px 20px rgba(255,85,0,.3);
-      border-radius: 20px;
-    }
-    .breath-type-btn.sel {
-      box-shadow: 0 0 0 1.5px rgba(255,140,0,.55), 0 3px 14px rgba(255,85,0,.15);
-    }
 
     /* ── ONBOARDING QUIZ ── */
     .ob-quiz { display:flex; flex-direction:column; align-items:center; width:100%; }
@@ -2236,35 +2256,43 @@
   <!-- ══ BREATHING EXERCISE ══ -->
   <div class="breath-overlay hidden" id="breath-overlay">
     <div class="breath-hdr">
-      <div class="breath-back-btn" onclick="closeBreathing()">← Zatvoriť</div>
+      <div class="breath-back-btn" id="b-back-btn" onclick="breathBackAction()">← Zatvoriť</div>
       <div class="breath-hdr-title">🌬️ Dychové cvičenia</div>
       <div style="width:70px"></div>
     </div>
-    <div class="breath-type-row" id="b-type-row"></div>
-    <div class="breath-visual-area">
-      <div class="breath-circle-outer" id="b-circle-outer">
-        <svg viewBox="0 0 200 200">
-          <defs>
-            <linearGradient id="bGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#FF5500"/>
-              <stop offset="100%" stop-color="#FFD700"/>
-            </linearGradient>
-          </defs>
-          <circle cx="100" cy="100" r="80" fill="none" stroke="#1a1a1a" stroke-width="7"/>
-          <circle id="b-arc" cx="100" cy="100" r="80" fill="none"
-            stroke="#333" stroke-width="7" stroke-linecap="round"
-            stroke-dasharray="502.65" stroke-dashoffset="502.65"
-            transform="rotate(-90 100 100)"/>
-        </svg>
-        <div class="breath-txt">
-          <div class="breath-phase-nm" id="b-phase-nm">Vyber typ</div>
-          <div class="breath-phase-cd" id="b-phase-cd">–</div>
-          <div class="breath-total-tm" id="b-total-tm">3:00</div>
-        </div>
-      </div>
-      <div class="breath-cycles-ct" id="b-cycles">0 cyklov dokončených</div>
+
+    <!-- VIEW A: výber typu -->
+    <div class="breath-select-view" id="b-select-view">
+      <div class="breath-select-list" id="b-type-row"></div>
     </div>
-    <div class="breath-ctrl-btn" id="b-ctrl-btn" onclick="toggleBreathing()">Spustiť</div>
+
+    <!-- VIEW B: aktívne cvičenie -->
+    <div class="breath-active-view hidden" id="b-active-view">
+      <div class="breath-visual-area">
+        <div class="breath-circle-outer" id="b-circle-outer">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="bGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FF5500"/>
+                <stop offset="100%" stop-color="#FFD700"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#1a1a1a" stroke-width="7"/>
+            <circle id="b-arc" cx="100" cy="100" r="80" fill="none"
+              stroke="#333" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="502.65" stroke-dashoffset="502.65"
+              transform="rotate(-90 100 100)"/>
+          </svg>
+          <div class="breath-txt">
+            <div class="breath-phase-nm" id="b-phase-nm">Priprav sa</div>
+            <div class="breath-phase-cd" id="b-phase-cd">–</div>
+            <div class="breath-total-tm" id="b-total-tm">3:00</div>
+          </div>
+        </div>
+        <div class="breath-cycles-ct" id="b-cycles">0 cyklov dokončených</div>
+      </div>
+      <div class="breath-ctrl-btn" id="b-ctrl-btn" onclick="toggleBreathing()">⏸ Pauza</div>
+    </div>
   </div>
 
   <!-- ══ STREAK RECOVERY ══ -->
@@ -2717,24 +2745,24 @@ const HABIT_EXTRA = {
 };
 
 const BREATH_TYPES = [
-  { name:'Box Breathing', tag:'4-4-4-4\nFokus & sústredenie',
+  { icon:'🟧', name:'Box Breathing', pat:'4 – 4 – 4 – 4', desc:'Fokus & sústredenie',
     phases:[
       { nm:'Nádych',    dur:4, scale:1.24, freq:528, glow:true  },
       { nm:'Zadržanie', dur:4, scale:1.24, freq:440, glow:true  },
       { nm:'Výdych',    dur:4, scale:1.0,  freq:341, glow:false },
       { nm:'Pauza',     dur:4, scale:1.0,  freq:262, glow:false },
     ]},
-  { name:'4-7-8', tag:'4-7-8\nHlboká relaxácia',
+  { icon:'🌙', name:'4-7-8', pat:'4 – 7 – 8', desc:'Hlboká relaxácia & spánok',
     phases:[
       { nm:'Nádych',    dur:4, scale:1.24, freq:528, glow:true  },
       { nm:'Zadržanie', dur:7, scale:1.24, freq:440, glow:true  },
       { nm:'Výdych',    dur:8, scale:1.0,  freq:330, glow:false },
     ]},
-  { name:'Fyziol. vzdych', tag:'4-2-8\nReset stresu',
+  { icon:'⚡', name:'Wim Hof', pat:'2 – 2 – 15', desc:'Energia, vitalita & reset stresu',
     phases:[
-      { nm:'Nádych',        dur:4, scale:1.18, freq:528, glow:true  },
-      { nm:'Krátky nádych', dur:2, scale:1.26, freq:659, glow:true  },
-      { nm:'Výdych',        dur:8, scale:1.0,  freq:330, glow:false },
+      { nm:'Nádych',    dur:2,  scale:1.22, freq:528, glow:true  },
+      { nm:'Výdych',    dur:2,  scale:1.0,  freq:341, glow:false },
+      { nm:'Zadržanie', dur:15, scale:1.1,  freq:220, glow:true  },
     ]},
 ];
 
@@ -4801,14 +4829,30 @@ function addToCalendar(id, btnEl) {
    BREATHING EXERCISE
 ───────────────────────────── */
 let breathAudioCtx = null;
-let bS = { running:false, paused:false, typeIdx:0, phaseIdx:0, phaseMs:0, totalMs:0, totalMaxMs:180000, cycles:0, prevTs:0, raf:null };
+let bS = { running:false, paused:false, typeSelected:false, typeIdx:0, phaseIdx:0, phaseMs:0, totalMs:0, totalMaxMs:180000, cycles:0, prevTs:0, raf:null };
+
+function breathBackAction() {
+  if (bS.typeSelected) {
+    // Zastav cvičenie a vráť sa na výber
+    if (bS.raf) { cancelAnimationFrame(bS.raf); bS.raf = null; }
+    bS.running = false; bS.paused = false; bS.typeSelected = false;
+    document.getElementById('b-active-view').classList.add('hidden');
+    document.getElementById('b-select-view').classList.remove('hidden');
+    document.getElementById('b-back-btn').textContent = '← Zatvoriť';
+  } else {
+    closeBreathing();
+  }
+}
 
 function openBreathingExercise() {
   closeDetail();
-  Object.assign(bS, { running:false, paused:false, typeIdx:0, phaseIdx:0, phaseMs:0, totalMs:0, cycles:0, prevTs:0 });
   if (bS.raf) { cancelAnimationFrame(bS.raf); bS.raf = null; }
+  Object.assign(bS, { running:false, paused:false, typeSelected:false, typeIdx:0, phaseIdx:0, phaseMs:0, totalMs:0, cycles:0, prevTs:0 });
+  // Show selection view, hide active view
+  document.getElementById('b-select-view').classList.remove('hidden');
+  document.getElementById('b-active-view').classList.add('hidden');
+  document.getElementById('b-back-btn').textContent = '← Zatvoriť';
   renderBreathTypes();
-  breathRender();
   document.getElementById('breath-overlay').classList.remove('hidden');
 }
 
@@ -4823,31 +4867,43 @@ function renderBreathTypes() {
   row.innerHTML = '';
   BREATH_TYPES.forEach((t, i) => {
     const btn = document.createElement('div');
-    btn.className = 'breath-type-btn' + (i === 0 ? ' sel' : '');
+    btn.className = 'breath-type-btn';
     btn.id = `btype-${i}`;
-    const [l1, l2] = t.tag.split('\n');
-    btn.innerHTML = `<div class="btype-nm">${t.name}</div><div class="btype-ds">${l1}<br>${l2}</div>`;
+    btn.innerHTML = `
+      <div class="btype-ico">${t.icon}</div>
+      <div class="btype-info">
+        <div class="btype-nm">${t.name}</div>
+        <div class="btype-pat">${t.pat}</div>
+        <div class="btype-ds">${t.desc}</div>
+      </div>
+      <div class="btype-arr">›</div>
+    `;
     btn.onclick = () => selectBreathType(i);
     row.appendChild(btn);
   });
 }
 
 function selectBreathType(i) {
-  if (bS.running) return;
-  bS.typeIdx = i; bS.phaseIdx = 0; bS.phaseMs = 0;
-  document.querySelectorAll('.breath-type-btn').forEach((b, j) => b.classList.toggle('sel', j === i));
+  // Switch to active view and auto-start
+  bS.typeIdx = i; bS.phaseIdx = 0; bS.phaseMs = 0; bS.totalMs = 0; bS.cycles = 0;
+  bS.typeSelected = true;
+  document.getElementById('b-select-view').classList.add('hidden');
+  document.getElementById('b-active-view').classList.remove('hidden');
+  document.getElementById('b-back-btn').textContent = '← Späť';
+  // Auto-start
+  bS.running = true; bS.paused = false; bS.prevTs = 0;
+  breathPlayTone(BREATH_TYPES[i].phases[0].freq);
+  bS.raf = requestAnimationFrame(breathTick);
   breathRender();
 }
 
 function toggleBreathing() {
-  if (!bS.running) {
-    bS.running = true; bS.paused = false; bS.prevTs = 0;
-    breathPlayTone(BREATH_TYPES[bS.typeIdx].phases[bS.phaseIdx].freq);
-    bS.raf = requestAnimationFrame(breathTick);
-  } else if (!bS.paused) {
+  if (!bS.paused) {
+    // Pauza
     bS.paused = true;
     cancelAnimationFrame(bS.raf); bS.raf = null;
   } else {
+    // Pokračovať
     bS.paused = false; bS.prevTs = 0;
     bS.raf = requestAnimationFrame(breathTick);
   }
@@ -4902,14 +4958,14 @@ function breathRender() {
   const cd = document.getElementById('b-phase-cd');
   const tm = document.getElementById('b-total-tm');
   const cy = document.getElementById('b-cycles');
-  if (nm) nm.textContent = bS.running ? phase.nm : 'Vyber typ dýchania';
-  if (cd) cd.textContent = bS.running ? Math.ceil(remPh) : '–';
+  if (nm) nm.textContent = bS.paused ? 'Pauza' : phase.nm;
+  if (cd) cd.textContent = bS.paused ? '–' : Math.ceil(remPh);
   if (tm) { const m=Math.floor(remTot/60),s=Math.floor(remTot%60); tm.textContent=`${m}:${String(s).padStart(2,'0')}`; }
   if (cy) cy.textContent = skCycles(bS.cycles);
   // Button
   const btn = document.getElementById('b-ctrl-btn');
   if (btn) {
-    btn.textContent = !bS.running ? 'Spustiť' : bS.paused ? '▶ Pokračovať' : '⏸ Pauza';
+    btn.textContent = bS.paused ? '▶ Pokračovať' : '⏸ Pauza';
     btn.className = 'breath-ctrl-btn' + (bS.paused ? ' paused' : '');
   }
 }
