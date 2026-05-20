@@ -2124,6 +2124,7 @@
         <div class="detail-why-lbl">Prečo tento návyk?</div>
         <div class="detail-why-txt" id="d-why"></div>
       </div>
+      <div id="d-breath"></div>
       <div id="d-time"></div>
       <div class="detail-bars-lbl">Posledných 7 dní</div>
       <div class="detail-bars-row" id="d-bars"></div>
@@ -2556,7 +2557,7 @@ const HABIT_META = {
   0:  { time:'Kedykoľvek · 30 min', tip:'Priprav si jedlo deň vopred — ráno je rozhodovanie ťažšie.', related:[5,1,12], res:{ic:'📖', type:'Kniha', title:'In Defence of Food', author:'Michael Pollan'} },
   1:  { time:'Ráno · 30–60 min',    tip:'Daj si cvičebné oblečenie večer dopredu — rozhodnutie je hotové.', related:[2,4,3], res:{ic:'🎙️', type:'Podcast', title:'Huberman Lab', author:'Andrew Huberman'} },
   2:  { time:'Ráno · 10 min',       tip:'Sprav len 3 hlboké predklony — telo sa rozhýbe samo.', related:[1,3,8], res:{ic:'📖', type:'Kniha', title:'Becoming a Supple Leopard', author:'Kelly Starrett'} },
-  3:  { time:'Ráno · 5 min',        tip:'4 nádychy nosom, 4 výdychy ústami — to stačí na štart.', related:[2,8,13], res:{ic:'🎙️', type:'Podcast', title:'Oxygen Advantage', author:'Patrick McKeown'} },
+  3:  { time:'Ráno · 3 min',        tip:'4 nádychy nosom, 4 výdychy ústami — to stačí na štart.', related:[2,8,13], res:{ic:'🎙️', type:'Podcast', title:'Oxygen Advantage', author:'Patrick McKeown'} },
   4:  { time:'Ráno · 2 min',        tip:'Nastav teplú vodu — posledných 30 sekúnd prepni na studenú.', related:[1,5,9], res:{ic:'🎙️', type:'Podcast', title:'Huberman Lab — Cold Exposure', author:'Andrew Huberman'} },
   5:  { time:'Celý deň · priebežne',tip:'Daj pohár vody na nočný stolík — vypij ho hneď po vstávaní.', related:[0,1,10], res:{ic:'📖', type:'Kniha', title:'Your Body\'s Many Cries for Water', author:'F. Batmanghelidj'} },
   6:  { time:'Večer · 20 min',      tip:'Otvor knihu na záložke — prečítaj len jednu stranu, zvyšok príde sám.', related:[9,12,7], res:{ic:'📖', type:'Kniha', title:'Atomic Habits', author:'James Clear'} },
@@ -4478,14 +4479,19 @@ function renderDetailActions(id) {
       </div>`;
   }
 
+  // Breathing button goes between "Prečo tento návyk?" and "Ráno · X min"
+  const breathWrap = document.getElementById('d-breath');
+  if (breathWrap) breathWrap.innerHTML = '';
   if (extra.exercise === 'breathing') {
     const btn = document.createElement('div');
     btn.className = 'detail-action-btn fire';
+    btn.style.marginBottom = '12px';
     btn.innerHTML = `<div class="detail-action-ic">🌬️</div><div>
       <div class="detail-action-lbl">Spustiť dychové cvičenie</div>
       <div class="detail-action-sub">3 typy · 3 minúty · vizuálny + zvukový sprievodca</div></div>`;
     btn.onclick = () => openBreathingExercise();
-    wrap.appendChild(btn);
+    if (breathWrap) breathWrap.appendChild(btn);
+    else wrap.appendChild(btn);
   }
 
   if (extra.ambient && AMBIENT_TYPES[id]) {
