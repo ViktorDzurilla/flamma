@@ -778,31 +778,6 @@
     /* SVG nesmie blokovať kliknutia — zachytáva ich wrapper */
     .hc-ring-btn svg { pointer-events: none; }
 
-    /* ── LEADERBOARD ── */
-    .lboard { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
-    .lb-entry {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--bg2); border-radius: 14px; padding: 10px 14px;
-      border: 1px solid rgba(255,255,255,.04); transition: all .2s;
-    }
-    .lb-entry.top1 { background: linear-gradient(135deg,rgba(255,215,0,.13),var(--bg2)); border-color: rgba(255,215,0,.38); }
-    .lb-entry.top2 { background: linear-gradient(135deg,rgba(192,192,192,.1),var(--bg2));  border-color: rgba(192,192,192,.28); }
-    .lb-entry.top3 { background: linear-gradient(135deg,rgba(205,127,50,.11),var(--bg2));  border-color: rgba(205,127,50,.28); }
-    .lb-entry.me   { border-color: rgba(255,140,0,.4); background: linear-gradient(135deg,rgba(255,85,0,.1),var(--bg2)); }
-    .lb-medal { font-size: 20px; width: 24px; text-align: center; flex-shrink: 0; }
-    .lb-rank  { font-size: 12px; font-weight: 800; color: var(--tx2); width: 24px; text-align: center; flex-shrink: 0; }
-    .lb-av {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: var(--bg3); font-size: 18px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .lb-info { flex: 1; min-width: 0; }
-    .lb-name   { font-size: 13px; font-weight: 700; }
-    .lb-streak { font-size: 10px; color: var(--tx2); margin-top: 1px; }
-    .lb-award  { font-size: 9px; font-weight: 800; letter-spacing: 1px; color: var(--go); background: rgba(255,215,0,.1); border: 1px solid rgba(255,215,0,.22); border-radius: 6px; padding: 2px 6px; margin-top: 3px; display: inline-block; }
-    .lb-pts { font-size: 15px; font-weight: 800; color: var(--or); flex-shrink: 0; }
-    .lb-me-tag { font-size: 9px; color: var(--or); font-weight: 700; margin-left: 5px; }
-
     /* ── TAB TRANSITION ── */
     @keyframes screenEnter {
       from { opacity: 0; transform: translateY(6px); }
@@ -1362,13 +1337,6 @@
                  background-image: linear-gradient(90deg, var(--or), var(--go), var(--or)); }
 
     /* ══════════════════════════════
-       LEADERBOARD IMPROVED
-    ══════════════════════════════ */
-    .lb-entry { transition: transform .18s; }
-    .lb-entry:active { transform: scale(.98); }
-    .lb-entry.top1 { box-shadow: 0 4px 22px rgba(255,215,0,.1); }
-    .lb-entry.me   { box-shadow: 0 4px 22px rgba(255,85,0,.1); }
-
     /* ══════════════════════════════
        HOME LOGO IMPROVED
     ══════════════════════════════ */
@@ -2025,10 +1993,6 @@
     <!-- Badges -->
     <div class="slbl">Záslužné plamene</div>
     <div class="bdg-grid" id="bdg-grid"></div>
-
-    <!-- Leaderboard -->
-    <div class="slbl" style="margin-top:22px" id="lboard-title">🏆 Rebríček</div>
-    <div class="lboard" id="lboard"></div>
 
     <!-- Reset dát -->
     <div style="margin:28px 0 8px;text-align:center">
@@ -4048,50 +4012,8 @@ function launchConfetti() {
 /* ─────────────────────────────
    LEADERBOARD
 ───────────────────────────── */
-const LEADERBOARD = [
-  { rank:1, name:'Michal K.', av:'🏆', pts:2840, streak:31, medal:'🥇', award:'Šampión mesiaca'     },
-  { rank:2, name:'Jana M.',   av:'💎', pts:2650, streak:28, medal:'🥈', award:'Strieborný plameň'   },
-  { rank:3, name:'Tomáš R.',  av:'🔥', pts:2510, streak:24, medal:'🥉', award:'Bronzový plameň'     },
-  { rank:4, name:'Petra S.',  av:'⭐', pts:2200, streak:21 },
-  { rank:5, name:'Lukáš B.',  av:'✦',  pts:1980, streak:18 },
-  { rank:6, name:'Ja',        av:'👤', pts:null, streak:0,  isMe:true },
-  { rank:7, name:'Zuzana T.', av:'🌙', pts:820,  streak:12 },
-  { rank:8, name:'Martin O.', av:'💪', pts:650,  streak:9  },
-];
-
-function renderLeaderboard() {
-  const wrap = document.getElementById('lboard');
-  if (!wrap) return;
-  // Dynamický nadpis rebríčka
-  const lbTitle = document.getElementById('lboard-title');
-  if (lbTitle) {
-    const months = ['Január','Február','Marec','Apríl','Máj','Jún','Júl','August','September','Október','November','December'];
-    const now = new Date();
-    lbTitle.textContent = `🏆 Rebríček — ${months[now.getMonth()]} ${now.getFullYear()}`;
-  }
-  const myPts = score() * 5;
-
-  LEADERBOARD.forEach(u => {
-    const pts  = u.isMe ? myPts : u.pts;
-    const topC = u.rank === 1 ? ' top1' : u.rank === 2 ? ' top2' : u.rank === 3 ? ' top3' : '';
-    const meC  = u.isMe ? ' me' : '';
-    const el   = document.createElement('div');
-    el.className = `lb-entry${topC}${meC}`;
-    el.innerHTML = `
-      ${u.medal
-        ? `<div class="lb-medal">${u.medal}</div>`
-        : `<div class="lb-rank">${u.rank}</div>`}
-      <div class="lb-av">${u.av}</div>
-      <div class="lb-info">
-        <div class="lb-name">${u.name}${u.isMe ? `<span class="lb-me-tag">← ja</span>` : ''}</div>
-        <div class="lb-streak">🔥 ${u.streak}-dňový streak</div>
-        ${u.award ? `<div class="lb-award">🏅 ${u.award}</div>` : ''}
-      </div>
-      <div class="lb-pts">${pts}</div>
-    `;
-    wrap.appendChild(el);
-  });
-}
+/* renderLeaderboard — removed */
+function renderLeaderboard() {}
 
 /* renderDailyPlan — removed */
 function renderDailyPlan() {}
