@@ -3413,19 +3413,78 @@ function renderSections() {
 ───────────────────────────── */
 let activeTab = '7';
 
-function renderChart(key) {
-  // Pre 7-dňový pohľad použij reálne dáta z histórie
-  let data = CHART_DATA[key];
-  if (key === '7') {
-    const realData = getHistoryPct(7);
-    if (realData.some(v => v > 0)) data = realData;
+function getRealChartData(key) {
+  const history = loadHistory();
+  const total   = activeCount();
+  const now     = new Date();
+  const DAY_SK  = ['Ne','Po','Ut','St','Št','Pi','So'];
+  const MON_SK  = ['Jan','Feb','Mar','Apr','Máj','Jún','Júl','Aug','Sep','Okt','Nov','Dec'];
+
+  function pct(k) {
+    return total > 0 ? Math.round((history[k] || []).length / total * 100) : 0;
   }
-  const labels = CHART_LABELS[key];
-  const W = 320, H = 100, pad = 10;
-  const n = data.length;
+  function dateKey(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  if (key === '7') {
+    const data = [], labels = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i);
+      data.push(pct(dateKey(d)));
+      labels.push(DAY_SK[d.getDay()]);
+    }
+    return { data, labels };
+  }
+
+  if (key === '30') {
+    const data = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i);
+      data.push(pct(dateKey(d)));
+    }
+    // 6 evenly-spaced labels across 30 points
+    const labels = [];
+    for (let j = 0; j < 6; j++) {
+      const idx = Math.round(j * 29 / 5);
+      const d   = new Date(now); d.setDate(now.getDate() - (29 - idx));
+      labels.push(`${d.getDate()}.${d.getMonth()+1}.`);
+    }
+    return { data, labels };
+  }
+
+  if (key === 'rok') {
+    const data = [], labels = [];
+    for (let i = 11; i >= 0; i--) {
+      const base  = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const year  = base.getFullYear(), month = base.getMonth();
+      const days  = new Date(year, month + 1, 0).getDate();
+      let sum = 0, count = 0;
+      for (let day = 1; day <= days; day++) {
+        const d = new Date(year, month, day);
+        if (d > now) break;
+        const k = dateKey(d);
+        if (history[k] !== undefined) { sum += pct(k); count++; }
+      }
+      data.push(count > 0 ? Math.round(sum / count) : 0);
+      labels.push(MON_SK[month]);
+    }
+    return { data, labels };
+  }
+
+  return { data: [], labels: [] };
+}
+
+function renderChart(key) {
+  const { data, labels } = getRealChartData(key);
+  const subMap = { '7': 'Za posledných 7 dní.', '30': 'Za posledných 30 dní.', 'rok': 'Za posledných 12 mesiacov.' };
+  document.getElementById('avg-sub').textContent = subMap[key] || '';
+
+  if (!data.length) return;
+  const W = 320, H = 100, pad = 10, n = data.length;
 
   const pts = data.map((v, i) => ({
-    x: pad + (i / (n - 1)) * (W - pad * 2),
+    x: pad + (n > 1 ? (i / (n - 1)) : 0.5) * (W - pad * 2),
     y: H - pad - (v / 100) * (H - pad * 2),
   }));
 
@@ -3443,18 +3502,18 @@ function renderChart(key) {
   document.getElementById('chart-fill').setAttribute('d', fill);
   document.getElementById('chart-line').setAttribute('d', line);
 
-  // Dots
+  // Dots — hide for 30-day (too dense)
   const dotsG = document.getElementById('chart-dots');
-  dotsG.innerHTML = pts.map(p =>
+  dotsG.innerHTML = key === '30' ? '' : pts.map(p =>
     `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#FF8C00" stroke="#080808" stroke-width="1.5"/>`
   ).join('');
 
   // Labels
-  const labDiv = document.getElementById('chart-labels');
-  labDiv.innerHTML = labels.map(l => `<span class="chart-lbl">${l}</span>`).join('');
+  document.getElementById('chart-labels').innerHTML =
+    labels.map(l => `<span class="chart-lbl">${l}</span>`).join('');
 
   // Avg
-  const avg = Math.round(data.reduce((a,b)=>a+b,0)/data.length);
+  const avg = Math.round(data.reduce((a, b) => a + b, 0) / data.length);
   document.getElementById('avg-num').textContent = avg + '%';
 }
 
