@@ -4952,15 +4952,31 @@ function showInviteToast() {
 function openShare() {
   const s   = score();
   const pts = s * 5;
+
+  // Real level from total history points
+  const allPts = (() => {
+    const hist = loadHistory();
+    const total = activeCount();
+    return total > 0 ? Object.values(hist).reduce((sum, d) => sum + d.length, 0) * 5 : pts;
+  })();
+  let curLvlIdx = 0;
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (allPts >= LEVELS[i].min) { curLvlIdx = i; break; }
+  }
+  const curLvl = LEVELS[curLvlIdx];
+  const user   = getUser();
+  const uname  = user ? user.name : 'Môj plameň';
+  const uav    = user ? user.avatar : '🔥';
+
   const topHabits = HABITS.filter(h => h.streak > 5 && h.active !== false)
     .sort((a,b) => b.streak - a.streak).slice(0,4);
 
   document.getElementById('share-card').innerHTML = `
     <div class="share-logo">FLAMMA</div>
     <div class="share-hero">
-      <div class="share-flame">🔥</div>
-      <div class="share-uname">Môj plameň</div>
-      <div class="share-level">Plameň · Úroveň 12</div>
+      <div class="share-flame">${uav}</div>
+      <div class="share-uname">${uname}</div>
+      <div class="share-level">${curLvl.icon} ${curLvl.name} · Úroveň ${curLvlIdx + 1}</div>
     </div>
     <div class="share-stats-row">
       <div class="share-stat"><div class="share-stat-val">${Math.max(...HABITS.filter(h=>h.active!==false).map(h=>h.streak),0)}</div><div class="share-stat-lbl">🔥 Streak</div></div>
