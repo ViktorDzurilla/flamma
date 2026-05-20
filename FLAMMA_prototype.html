@@ -3951,6 +3951,7 @@ function applyUserProfile() {
 
 function openSettings() {
   document.getElementById('settings-overlay').classList.add('show');
+  initSettingsSwipe();
 }
 function closeSettings(e) {
   if (!e || e.target === document.getElementById('settings-overlay')) {
@@ -3960,6 +3961,41 @@ function closeSettings(e) {
 function openSettingsProfile() {
   document.getElementById('settings-overlay').classList.remove('show');
   openChangeProfile();
+}
+
+function initSettingsSwipe() {
+  const sheet = document.querySelector('.settings-sheet');
+  if (!sheet || sheet._swipeInit) return;
+  sheet._swipeInit = true;
+
+  let startY = 0, curY = 0, dragging = false;
+
+  sheet.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    curY   = startY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    curY = e.touches[0].clientY;
+    const delta = Math.max(0, curY - startY);
+    sheet.style.transform = `translateY(${delta}px)`;
+  }, { passive: true });
+
+  sheet.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    const delta = curY - startY;
+    if (delta > 80) {
+      sheet.style.transform = '';
+      document.getElementById('settings-overlay').classList.remove('show');
+    } else {
+      sheet.style.transform = '';
+    }
+  });
 }
 
 function openChangeProfile() {
