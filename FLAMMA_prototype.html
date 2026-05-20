@@ -4727,17 +4727,42 @@ function useStreakFreeze() {
 /* ─────────────────────────────
    90-DAY CHALLENGE
 ───────────────────────────── */
+function getC90Day() {
+  const keys = Object.keys(loadHistory()).sort();
+  if (!keys.length) return 0;
+  const first = new Date(keys[0] + 'T12:00:00');
+  const now   = new Date(); now.setHours(12,0,0,0);
+  return Math.min(90, Math.max(1, Math.floor((now - first) / 86400000) + 1));
+}
+
 function renderC90() {
   const el = document.getElementById('c90-card');
   if (!el) return;
-  const day = C90_CURRENT_DAY;
-  const pct = (day / 90) * 100;
-  const next = C90_MILESTONES.find(m => m.day > day);
+  const day = getC90Day();
+
+  if (day === 0) {
+    el.innerHTML = `
+      <div class="c90-tag">🏁 90-dňová výzva</div>
+      <div class="c90-sub" style="margin-top:8px">Splň prvý návyk a výzva sa automaticky spustí. Každý deň = jeden krok k novej verzii seba.</div>
+      <div class="c90-track"><div class="c90-fill" style="width:0%"></div></div>`;
+    return;
+  }
+
+  const pct    = (day / 90) * 100;
+  const next   = C90_MILESTONES.find(m => m.day > day);
   const msHTML = C90_MILESTONES.map(m => `
     <div class="c90-ms">
       <div class="c90-ms-dot ${day >= m.day ? 'reached' : ''}">${m.icon}</div>
       <div class="c90-ms-lbl">Deň ${m.day}</div>
     </div>`).join('');
+
+  const subs = [
+    'Každý návyk dnes je krok k novej verzii seba.',
+    'Konzistentnosť je tvoja superschopnosť.',
+    'Mozog sa mení každým dňom, ktorý vydržíš.',
+    'Návyk sa buduje tichými dňami bez výhovoriek.',
+  ];
+  const sub = subs[Math.floor(day / 23) % subs.length];
 
   el.innerHTML = `
     <div class="c90-tag">🏁 90-dňová výzva</div>
@@ -4745,10 +4770,12 @@ function renderC90() {
       <div class="c90-day">${day}</div>
       <div class="c90-of">/ 90 dní</div>
     </div>
-    <div class="c90-sub">Každý návyk dnes je krok k novej verzii seba. ${pct.toFixed(0)}% cesty za tebou.</div>
+    <div class="c90-sub">${sub} ${pct.toFixed(0)}% cesty za tebou.</div>
     <div class="c90-track"><div class="c90-fill" style="width:${pct}%"></div></div>
     <div class="c90-ms-row">${msHTML}</div>
-    ${next ? `<div class="c90-next-ms">⬆️ Ďalší míľnik: <strong>${next.icon} ${next.title}</strong> za ${next.day - day} dní — ${next.desc}</div>` : '<div class="c90-next-ms">🌟 Výzva dokončená! Gratulujeme.</div>'}`;
+    ${next
+      ? `<div class="c90-next-ms">⬆️ Ďalší míľnik: <strong>${next.icon} ${next.title}</strong> za ${next.day - day} ${next.day - day === 1 ? 'deň' : next.day - day < 5 ? 'dni' : 'dní'} — ${next.desc}</div>`
+      : '<div class="c90-next-ms">🌟 Výzva dokončená! Gratulujeme — si nová verzia seba.</div>'}`;
 }
 
 /* ─────────────────────────────
