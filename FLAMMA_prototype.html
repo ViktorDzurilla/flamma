@@ -1122,6 +1122,17 @@
       border: 1px solid rgba(255,85,0,.25); transition: all .18s;
     }
     .add-habit-btn:active { background: rgba(255,85,0,.2); }
+    .add-habit-bottom-btn {
+      display: block; text-align: center;
+      margin: 14px 20px 8px;
+      padding: 14px;
+      font-size: 14px; font-weight: 700; color: var(--or);
+      background: rgba(255,85,0,.08);
+      border: 1.5px solid rgba(255,85,0,.28);
+      border-radius: 16px; cursor: pointer; transition: all .18s;
+      letter-spacing: .3px;
+    }
+    .add-habit-bottom-btn:active { background: rgba(255,85,0,.18); transform: scale(.98); }
 
     /* ══ ADD HABIT OVERLAY ══ */
     /* ══ ADD HABIT OVERLAY — jednoduchý spoľahlivý vzorec ══ */
@@ -1827,9 +1838,7 @@
       <div class="gbar-lbl" id="gbar-lbl">0 z 10 splnených</div>
     </div>
 
-    <div class="kindle-sort-row">
-      <div class="add-habit-btn" onclick="openAddHabit()">＋ Pridať návyk</div>
-    </div>
+    <div class="kindle-sort-row"></div>
     <div class="compassion-card" id="compassion-card">
       <div class="compassion-icon">🤗</div>
       <div class="compassion-title" id="compassion-title">Všetci majú ťažké dni</div>
@@ -3439,6 +3448,13 @@ function renderSections() {
   }, { passive: true });
 
   wrap.appendChild(sliderWrap);
+
+  // "+ Pridať návyk" — centered below all sections
+  const addBtn = document.createElement('div');
+  addBtn.className = 'add-habit-bottom-btn';
+  addBtn.innerHTML = '＋ Pridať návyk';
+  addBtn.onclick = openAddHabit;
+  wrap.appendChild(addBtn);
 }
 
 /* ─────────────────────────────
