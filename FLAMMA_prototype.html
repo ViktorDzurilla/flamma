@@ -425,11 +425,12 @@
     /* Stats 2-col */
     .stats2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .s2c {
-      background: var(--bg2); border-radius: 16px; padding: 16px;
+      background: var(--bg2); border-radius: 16px; padding: 20px 16px 18px;
       border: 1px solid rgba(255,255,255,.04);
+      display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-    .s2c-val { font-size: 24px; font-weight: 800; color: var(--or); }
-    .s2c-lbl { font-size: 10px; color: var(--tx2); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+    .s2c-val { font-size: 32px; font-weight: 800; color: var(--or); line-height: 1; }
+    .s2c-lbl { font-size: 10px; color: var(--tx2); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-top: 6px; }
 
     /* Look back */
     .lookback {
