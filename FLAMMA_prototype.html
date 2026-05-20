@@ -3112,10 +3112,10 @@ function updateAll() {
   const lvlFill  = document.getElementById('lvl-fill');
   if (nextLvl) {
     const ptsInLvl  = pts - curLvl.min;
-    const lvlRange  = nextLvl.min - curLvl.min;
+    const lvlRange  = curLvl.max - curLvl.min;
     const pct       = Math.min(100, Math.round(ptsInLvl / lvlRange * 100));
     if (lvlNmEl)  lvlNmEl.textContent  = curLvl.name + ' → ' + nextLvl.name;
-    if (lvlPtsEl) lvlPtsEl.textContent = pts + ' / ' + nextLvl.min;
+    if (lvlPtsEl) lvlPtsEl.textContent = pts + ' / ' + curLvl.max;
     if (lvlFill)  lvlFill.style.width  = pct + '%';
   } else {
     if (lvlNmEl)  lvlNmEl.textContent  = curLvl.name + ' — Max úroveň!';
